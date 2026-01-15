@@ -153,7 +153,7 @@ ${(() => {
 
   const generateNewSkillPR = () => {
     if (!newSkillName || newSkillCategories.length === 0) {
-      message.warning(
+      void message.warning(
         'Please provide skill name and select at least one category',
       );
       return;
@@ -202,8 +202,8 @@ ${newSkillCategories
   };
 
   const copyToClipboard = () => {
-    navigator.clipboard.writeText(prContent);
-    message.success('PR content copied to clipboard!');
+    void navigator.clipboard.writeText(prContent);
+    void message.success('PR content copied to clipboard!');
   };
 
   const handleEditMember = (member: LabMember) => {

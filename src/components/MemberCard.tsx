@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card, Tag, Avatar, Tooltip } from 'antd';
+import { Card, Tag, Avatar, Tooltip, Flex } from 'antd';
 import { UserOutlined, GithubOutlined, MailOutlined } from '@ant-design/icons';
 import type { LabMember, SkillsData, MemberSkill } from '../types/types';
 import { PROFICIENCY_COLORS, PROFICIENCY_LABELS } from '../types/types';
@@ -176,11 +176,11 @@ export const MemberCard: React.FC<MemberCardProps> = ({
               >
                 {category?.name || categoryId}
               </span>
-              <div className='flex flex-wrap mt-1'>
+              <Flex wrap={true} gap={5}>
                 {skills.map((skill) => (
                   <SkillTag key={skill.skillId} skill={skill} data={data} />
                 ))}
-              </div>
+              </Flex>
             </div>
           );
         })}

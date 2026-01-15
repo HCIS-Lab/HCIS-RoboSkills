@@ -197,7 +197,7 @@ export const GapAnalysisPage: React.FC = () => {
             <Statistic
               title={<span className='text-gray-400'>No Coverage</span>}
               value={stats.noCoverage}
-              valueStyle={{ color: '#ef4444' }}
+              styles={{ content: { color: '#ef4444' } }}
               prefix={<WarningOutlined />}
               suffix='skills'
             />
@@ -208,7 +208,7 @@ export const GapAnalysisPage: React.FC = () => {
             <Statistic
               title={<span className='text-gray-400'>No Expert</span>}
               value={stats.noExpert}
-              valueStyle={{ color: '#f59e0b' }}
+              styles={{ content: { color: '#f59e0b' } }}
               prefix={<ExclamationCircleOutlined />}
               suffix='skills'
             />
@@ -219,7 +219,7 @@ export const GapAnalysisPage: React.FC = () => {
             <Statistic
               title={<span className='text-gray-400'>Healthy</span>}
               value={stats.healthy}
-              valueStyle={{ color: '#22c55e' }}
+              styles={{ content: { color: '#22c55e' } }}
               prefix={<CheckCircleOutlined />}
               suffix='skills'
             />

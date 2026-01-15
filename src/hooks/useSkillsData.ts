@@ -1,12 +1,10 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import type {
   SkillsData,
   SkillCategory,
   LabMember,
   SkillGap,
   Subcategory,
-  VisualizationNode,
-  VisualizationLink,
 } from '../types/types';
 
 const DATA_URL = '/data/skillsData.json';
@@ -146,105 +144,4 @@ export function calculateSkillGaps(data: SkillsData): SkillGap[] {
   }
 
   return gaps.sort((a, b) => a.currentCoverage - b.currentCoverage);
-}
-
-// Build visualization graph data
-export function buildVisualizationGraph(data: SkillsData): {
-  nodes: VisualizationNode[];
-  links: VisualizationLink[];
-} {
-  const nodes: VisualizationNode[] = [];
-  const links: VisualizationLink[] = [];
-
-  // Add category nodes (outer ring)
-  for (const category of data.categories) {
-    nodes.push({
-      id: `cat-${category.id}`,
-      name: category.name,
-      type: 'category',
-      color: category.color,
-      size: 50,
-      data: category,
-    });
-  }
-
-  // Add skill nodes (with overlap info)
-  for (const skill of data.skills) {
-    const categories = getSkillCategories(skill, data.categories);
-    // Blend colors for overlapping skills
-    const blendedColor =
-      categories.length === 1
-        ? categories[0].color
-        : getMemberBlendedColor(
-            Object.fromEntries(skill.belongsTo.map((id) => [id, 1])),
-            data.categories,
-          );
-
-    nodes.push({
-      id: `skill-${skill.id}`,
-      name: skill.name,
-      type: 'skill',
-      color: blendedColor,
-      size: 20 + getMembersWithSkill(data.members, skill.id).length * 5,
-      data: skill,
-    });
-
-    // Link skills to their categories
-    for (const catId of skill.belongsTo) {
-      links.push({
-        source: `cat-${catId}`,
-        target: `skill-${skill.id}`,
-        strength: 0.3,
-        type: 'category-skill',
-      });
-    }
-  }
-
-  // Add member nodes
-  for (const member of data.members) {
-    const weights = getMemberCategoryWeights(member, data);
-    const color = getMemberBlendedColor(weights, data.categories);
-
-    nodes.push({
-      id: `member-${member.id}`,
-      name: member.name,
-      type: 'member',
-      color,
-      size: 25 + member.skills.length * 3,
-      categoryWeights: weights,
-      data: member,
-    });
-
-    // Link members to their skills
-    for (const memberSkill of member.skills) {
-      links.push({
-        source: `skill-${memberSkill.skillId}`,
-        target: `member-${member.id}`,
-        strength: memberSkill.proficiency === 'expert' ? 0.8 : 0.5,
-        type: 'skill-member',
-      });
-    }
-  }
-
-  // Add member-to-member links based on shared skills (for clustering)
-  for (let i = 0; i < data.members.length; i++) {
-    for (let j = i + 1; j < data.members.length; j++) {
-      const m1 = data.members[i];
-      const m2 = data.members[j];
-      const sharedSkills = m1.skills.filter((s1) =>
-        m2.skills.some((s2) => s2.skillId === s1.skillId),
-      ).length;
-
-      if (sharedSkills > 0) {
-        links.push({
-          source: `member-${m1.id}`,
-          target: `member-${m2.id}`,
-          strength: sharedSkills * 0.1,
-          type: 'member-member',
-        });
-      }
-    }
-  }
-
-  return { nodes, links };
 }

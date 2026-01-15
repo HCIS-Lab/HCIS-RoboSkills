@@ -203,7 +203,11 @@ const SkillChart: React.FC<SkillChartProps> = ({
           .size([calculatedRadius * 2, calculatedRadius * 2])
           .padding(2)(
           // Reduced padding
-            (d3.hierarchy({ children: peopleInSkill }) as d3.HierarchyNode<PersonNode>).sum(() => 1),
+          (
+            d3.hierarchy({
+              children: peopleInSkill,
+            }) as d3.HierarchyNode<PersonNode>
+          ).sum(() => 1),
         );
 
         const leaves = root.leaves();
@@ -223,15 +227,20 @@ const SkillChart: React.FC<SkillChartProps> = ({
         let center = centres[setKey];
         // If center missing (rare), fallback to average of raw categories
         if (!center) {
-           let tx = 0, ty = 0, count = 0;
-           skill.belongsTo.forEach((catId) => {
-             if (scaledSolution[catId]) {
-               tx += scaledSolution[catId].x;
-               ty += scaledSolution[catId].y;
-               count++;
-             }
-           });
-           center = count > 0 ? { x: tx / count, y: ty / count } : { x: width / 2, y: height / 2 };
+          let tx = 0,
+            ty = 0,
+            count = 0;
+          skill.belongsTo.forEach((catId) => {
+            if (scaledSolution[catId]) {
+              tx += scaledSolution[catId].x;
+              ty += scaledSolution[catId].y;
+              count++;
+            }
+          });
+          center =
+            count > 0
+              ? { x: tx / count, y: ty / count }
+              : { x: width / 2, y: height / 2 };
         }
 
         groupNodesMap.set(setKey, {
@@ -247,7 +256,9 @@ const SkillChart: React.FC<SkillChartProps> = ({
       // Add area to group radius calculation (approximate)
       const group = groupNodesMap.get(setKey)!;
       // Area = pi * r^2. We sum areas.
-      group.r = Math.sqrt((group.r * group.r) + (calculatedRadius * calculatedRadius));
+      group.r = Math.sqrt(
+        group.r * group.r + calculatedRadius * calculatedRadius,
+      );
 
       return {
         id: skill.id,
@@ -262,12 +273,16 @@ const SkillChart: React.FC<SkillChartProps> = ({
     });
 
     // Finalize Group Radii (add padding)
-    const groupNodes = Array.from(groupNodesMap.values()).map(g => ({
+    const groupNodes = Array.from(groupNodesMap.values()).map((g) => ({
       ...g,
-      r: g.r + 20 // Add padding for "Virtual Circle"
+      r: g.r + 20, // Add padding for "Virtual Circle"
     }));
 
-    return { nodes: skillNodes, groups: groupNodes, vennCircles: scaledSolution };
+    return {
+      nodes: skillNodes,
+      groups: groupNodes,
+      vennCircles: scaledSolution,
+    };
   }, [dimensions]);
 
   useEffect(() => {
@@ -368,35 +383,65 @@ const SkillChart: React.FC<SkillChartProps> = ({
       )
       .force('charge', d3.forceManyBody().strength(-20)); // prevent overlap glitch
 
-     // Custom force to pull skills to their dynamic group center
+    // Custom force to pull skills to their dynamic group center
     const forceClumpToGroup = (alpha: number) => {
       nodes.forEach((d) => {
         const group = groups.find((g) => g.id === d.groupId);
         if (group) {
-           // k determines how tight the cluster is. stronger k = tighter.
-           const k = 0.1 * alpha; 
-           d.vx! += (group.x! - d.x!) * k;
-           d.vy! += (group.y! - d.y!) * k;
+          // k determines how tight the cluster is. stronger k = tighter.
+          const k = 0.1 * alpha;
+          d.vx! += (group.x! - d.x!) * k;
+          d.vy! += (group.y! - d.y!) * k;
         }
+      });
+    };
+
+    // Custom force to respect Venn boundaries
+    const forceBoundary = (alpha: number) => {
+      nodes.forEach((d) => {
+        Object.entries(vennCircles).forEach(([catId, circle]) => {
+          const isMember = d.categories.includes(catId);
+          const dx = d.x! - circle.x;
+          const dy = d.y! - circle.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+
+          if (isMember) {
+            // Stay INSIDE: If dist > radius, push IN
+            if (dist > circle.radius - d.r) {
+              const k = (dist - (circle.radius - d.r)) * 0.1 * alpha;
+              d.vx! -= (dx / dist) * k;
+              d.vy! -= (dy / dist) * k;
+            }
+          } else {
+            // Stay OUTSIDE: If dist < radius, push OUT
+            // This prevents "A" skills from drifting into "B" circle (the overlap zone)
+            if (dist < circle.radius + d.r) {
+              const k = (circle.radius + d.r - dist) * 0.8 * alpha; // Stronger push out
+              d.vx! += (dx / dist) * k;
+              d.vy! += (dy / dist) * k;
+            }
+          }
+        });
       });
     };
 
     // Chain simulations
     // We update skill targets based on group positions in every tick
     skillSimulation.on('tick', () => {
-      // Apply custom clumping force manually since standard forceX/Y takes static or accessor, 
+      // Apply custom clumping force manually since standard forceX/Y takes static or accessor,
       // but we want to efficiently read from the mutable group objects.
       forceClumpToGroup(skillSimulation.alpha());
+      forceBoundary(skillSimulation.alpha()); // Apply boundary constraints
 
       skillNodes.attr('transform', (d) => `translate(${d.x},${d.y})`);
-      
+
       // OPTIONAL: Draw Group Circles for Debugging
       // groupCircles.attr('cx', d => d.x!).attr('cy', d => d.y!);
     });
 
     // Sync group simulation ticking (it updates the group.x/y which skillSim reads)
     // We don't need a visual update for groups unless debugging
-    groupSimulation.nodes(groups); 
+    groupSimulation.nodes(groups);
 
     // Render Skills
     const skillGroup = container.append('g').attr('class', 'skills');
@@ -419,15 +464,17 @@ const SkillChart: React.FC<SkillChartProps> = ({
     skillNodes.each(function (d) {
       if (!d.categories || d.categories.length === 0) return;
       const g = d3.select(this);
-      
-      const arcGen = d3.arc<any>()
-          .innerRadius(d.r)
-          .outerRadius(d.r)
-          .cornerRadius(0);
 
-      const pie = d3.pie<string>()
-          .value(1) // Equal size segments
-          .sort(null); // Keep order of categories
+      const arcGen = d3
+        .arc<any>()
+        .innerRadius(d.r)
+        .outerRadius(d.r)
+        .cornerRadius(0);
+
+      const pie = d3
+        .pie<string>()
+        .value(1) // Equal size segments
+        .sort(null); // Keep order of categories
 
       const arcsData = pie(d.categories);
 
@@ -438,8 +485,8 @@ const SkillChart: React.FC<SkillChartProps> = ({
         .attr('d', (a) => arcGen(a as any)) // Cast to any to calm TS for simple arc usage
         .attr('fill', 'none')
         .attr('stroke', (a) => {
-             const cat = categoryMap.get(a.data);
-             return cat ? cat.color : '#ccc';
+          const cat = categoryMap.get(a.data);
+          return cat ? cat.color : '#ccc';
         })
         .attr('stroke-width', 2) // Thicker for visibility
         .attr('stroke-opacity', 0.8)
@@ -503,9 +550,9 @@ const SkillChart: React.FC<SkillChartProps> = ({
 
   // Drag Helper
   function drag(
-    simulation: d3.Simulation<SkillNode, undefined>, 
-    groupSim: d3.Simulation<GroupNode, undefined>
-    ) {
+    simulation: d3.Simulation<SkillNode, undefined>,
+    groupSim: d3.Simulation<GroupNode, undefined>,
+  ) {
     function dragstarted(
       event: d3.D3DragEvent<SVGGElement, SkillNode, unknown>,
       d: SkillNode,

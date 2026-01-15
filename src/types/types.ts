@@ -67,33 +67,3 @@ export interface SkillGap {
   expertCount: number;
   recommendation: string;
 }
-
-// For PR generation
-export interface DataChange {
-  type: 'add' | 'update' | 'delete';
-  entityType: 'member' | 'category' | 'skill';
-  entityId: string;
-  previousValue?: unknown;
-  newValue?: unknown;
-  description: string;
-}
-
-// For visualization - node types in the force-directed graph
-export interface VisualizationNode {
-  id: string;
-  name: string;
-  type: 'category' | 'skill' | 'member';
-  color: string;
-  size: number;
-  // For members, track their skill count per category
-  categoryWeights?: Record<string, number>;
-  // Original data reference
-  data?: SkillCategory | Subcategory | LabMember;
-}
-
-export interface VisualizationLink {
-  source: string;
-  target: string;
-  strength: number;
-  type: 'category-skill' | 'skill-member' | 'member-member';
-}
