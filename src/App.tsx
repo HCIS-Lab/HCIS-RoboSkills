@@ -58,10 +58,13 @@ const Navigation: React.FC<{
         }}
         trigger={null}
       >
-        <div className='h-16 flex items-center justify-center border-b border-white/10'>
-          <span className='text-xl font-bold bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent'>
-            {collapsed ? 'RS' : 'RoboSkills'}
-          </span>
+        <div className='h-16 flex items-center justify-center border-b border-white/10 gap-2'>
+          <img src='/logo.svg' alt='RoboSkills Logo' className='w-8 h-8' />
+          {!collapsed && (
+            <span className='text-xl font-bold bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent'>
+              RoboSkills
+            </span>
+          )}
         </div>
         <Menu
           mode='inline'
@@ -87,9 +90,12 @@ const Navigation: React.FC<{
           justifyContent: 'space-between',
         }}
       >
-        <span className='text-xl font-bold bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent'>
-          RoboSkills
-        </span>
+        <div className='flex items-center gap-2'>
+          <img src='/logo.svg' alt='RoboSkills Logo' className='w-8 h-8' />
+          <span className='text-xl font-bold bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent'>
+            RoboSkills
+          </span>
+        </div>
         <MenuOutlined
           className='text-white text-xl cursor-pointer'
           onClick={() => setCollapsed(!collapsed)}
