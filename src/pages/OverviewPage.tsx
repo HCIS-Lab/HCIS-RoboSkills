@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
-import { Input, Select, Spin, Empty, Modal } from 'antd';
+import { Input, Select, Spin, Empty } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
 import { useSkillsData } from '../hooks/useSkillsData';
 import VennZoomChart from '../components/SkillChart';
 import MemberCard from '../components/MemberCard';
-import type { LabMember } from '../types/types';
 
 const { Option } = Select;
 
@@ -12,7 +11,30 @@ export const OverviewPage: React.FC = () => {
   const { data, loading, error } = useSkillsData();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [selectedMember, setSelectedMember] = useState<LabMember | null>(null);
+
+  const handleMemberClick = React.useCallback(() => {
+    // Scroll to members grid
+    const element = document.getElementById('members-grid');
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, []);
+
+  const handleSelectionChange = React.useCallback(
+    (memberId: string | null) => {
+      if (!data) return; // Guard against data being unavailable
+
+      if (!memberId) {
+        setSearchTerm('');
+        return;
+      }
+      const member = data.members.find((m) => m.id === memberId);
+      if (member) {
+        setSearchTerm(member.name);
+      }
+    },
+    [data],
+  );
 
   if (loading) {
     return (
@@ -46,10 +68,6 @@ export const OverviewPage: React.FC = () => {
     return matchesSearch && matchesCategory;
   });
 
-  const handleMemberClick = (member: LabMember) => {
-    setSelectedMember(member);
-  };
-
   return (
     <div className='space-y-6'>
       {/* Header */}
@@ -68,6 +86,7 @@ export const OverviewPage: React.FC = () => {
         <VennZoomChart
           data={data}
           onMemberClick={handleMemberClick}
+          onSelectionChange={handleSelectionChange}
           height={550}
         />
       </div>
@@ -98,7 +117,7 @@ export const OverviewPage: React.FC = () => {
       </div>
 
       {/* Members Grid */}
-      <div>
+      <div id='members-grid'>
         <h2 className='text-lg font-semibold text-white mb-3'>
           Lab Members ({filteredMembers.length})
         </h2>
@@ -108,7 +127,6 @@ export const OverviewPage: React.FC = () => {
               key={member.id}
               member={member}
               data={data}
-              onClick={setSelectedMember}
             />
           ))}
         </div>
@@ -116,88 +134,6 @@ export const OverviewPage: React.FC = () => {
           <Empty description='No members match your filters' />
         )}
       </div>
-
-      {/* Member Detail Modal */}
-      <Modal
-        open={!!selectedMember}
-        onCancel={() => setSelectedMember(null)}
-        footer={null}
-        title={selectedMember?.name}
-        width={600}
-      >
-        {selectedMember && (
-          <div className='space-y-4'>
-            <p className='text-gray-400'>{selectedMember.role}</p>
-
-            <div>
-              <h3 className='text-sm font-semibold mb-2'>Skills & Expertise</h3>
-              <div className='space-y-2'>
-                {selectedMember.skills.map((memberSkill) => {
-                  const skill = data.skills.find(
-                    (s) => s.id === memberSkill.skillId,
-                  );
-                  if (!skill) return null;
-                  const categories = skill.belongsTo
-                    .map((id) => data.categories.find((c) => c.id === id))
-                    .filter(Boolean);
-
-                  return (
-                    <div
-                      key={memberSkill.skillId}
-                      className='p-2 rounded-lg bg-gray-800/50 border border-gray-700'
-                    >
-                      <div className='flex items-center justify-between mb-1'>
-                        <span className='font-medium'>{skill.name}</span>
-                        <span
-                          className='text-xs px-2 py-0.5 rounded capitalize'
-                          style={{
-                            backgroundColor: `${
-                              memberSkill.proficiency === 'expert'
-                                ? '#9b59b6'
-                                : memberSkill.proficiency === 'advanced'
-                                  ? '#27ae60'
-                                  : memberSkill.proficiency === 'intermediate'
-                                    ? '#f39c12'
-                                    : '#95a5a6'
-                            }30`,
-                            color:
-                              memberSkill.proficiency === 'expert'
-                                ? '#9b59b6'
-                                : memberSkill.proficiency === 'advanced'
-                                  ? '#27ae60'
-                                  : memberSkill.proficiency === 'intermediate'
-                                    ? '#f39c12'
-                                    : '#95a5a6',
-                          }}
-                        >
-                          {memberSkill.proficiency}
-                        </span>
-                      </div>
-                      <p className='text-xs text-gray-400'>
-                        {skill.description}
-                      </p>
-                      <div className='flex flex-wrap gap-1 mt-1'>
-                        {categories.map((cat) => (
-                          <span
-                            key={cat?.id}
-                            className='text-xs px-1.5 py-0.5 rounded-full'
-                            style={{
-                              backgroundColor: `${cat?.color}20`,
-                              color: cat?.color,
-                            }}
-                          >
-                            {cat?.name}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          </div>
-        )}
-      </Modal>
     </div>
   );
 };

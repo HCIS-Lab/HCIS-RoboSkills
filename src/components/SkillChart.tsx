@@ -1,5 +1,7 @@
 import React, { useEffect, useRef, useMemo, useState } from 'react';
 import * as d3 from 'd3';
+import { UserOutlined, ArrowDownOutlined, CloseOutlined } from '@ant-design/icons';
+import { Button, Avatar } from 'antd';
 
 import skillsData from '../../public/data/skillsData.json';
 import * as venn from '../utils/d3-venn';
@@ -34,6 +36,7 @@ interface Member {
   role: string;
   email: string;
   github?: string;
+  avatar?: string;
   skills: MemberSkill[];
 }
 
@@ -67,14 +70,16 @@ interface GroupNode extends d3.SimulationNodeDatum {
 interface SkillChartProps {
   data?: SkillsData;
   onMemberClick?: (member: Member) => void;
+  onSelectionChange?: (memberId: string | null) => void;
   width?: number;
   height?: number;
 }
 
-const SkillChart: React.FC<SkillChartProps> = ({
+const SkillChart: React.FC<SkillChartProps> = React.memo(({
   width: propWidth,
   height: propHeight,
   onMemberClick,
+  onSelectionChange,
 }) => {
   const svgRef = useRef<SVGSVGElement>(null);
   const [dimensions, setDimensions] = useState({
@@ -86,6 +91,7 @@ const SkillChart: React.FC<SkillChartProps> = ({
   const selectionRef = useRef<{ userId: string; rootSkillId: string } | null>(
     null,
   );
+  const [selectedMemberId, setSelectedMemberId] = useState<string | null>(null);
 
   // Update dimensions on mount/resize if not fixed props
   useEffect(() => {
@@ -266,7 +272,7 @@ const SkillChart: React.FC<SkillChartProps> = ({
       groups: groupNodes,
       vennCircles: scaledSolution,
     };
-  }, [dimensions]);
+  }, [dimensions]); // Data is static/imported, so only dimensions trigger recalc
 
   useEffect(() => {
     if (!svgRef.current) return;
@@ -385,6 +391,8 @@ const SkillChart: React.FC<SkillChartProps> = ({
 
     const resetZoom = () => {
       selectionRef.current = null;
+      setSelectedMemberId(null);
+      if (onSelectionChange) onSelectionChange(null);
       linkLayer.selectAll('*').remove(); // Clear links
 
       svg.transition().duration(750).call(zoom.transform, d3.zoomIdentity);
@@ -681,6 +689,8 @@ const SkillChart: React.FC<SkillChartProps> = ({
           
           // Set selection
           selectionRef.current = { userId, rootSkillId: d.id };
+          setSelectedMemberId(userId);
+          if (onSelectionChange) onSelectionChange(userId);
           
           // Trigger visual updates
           zoomToNode(d, userId, true);
@@ -863,8 +873,57 @@ const SkillChart: React.FC<SkillChartProps> = ({
         }}
         xmlns='http://www.w3.org/2000/svg'
       />
+      
+      {/* Selected Member Overlay */}
+      {selectedMemberId && (() => {
+         const member = (skillsData.members as Member[]).find(m => m.id === selectedMemberId);
+         if (!member) return null;
+         
+         return (
+            <div className="absolute top-4 right-4 z-10 glass-card p-4 rounded-xl border border-white/10 shadow-xl max-w-sm animate-fade-in-up backdrop-blur-md bg-black/40">
+                <div className="flex items-start gap-3">
+                   <Avatar 
+                      size={48} 
+                      icon={<UserOutlined />} 
+                      src={member.avatar} // Assuming optional avatar doesn't break
+                      className="border border-white/20"
+                   />
+                   <div>
+                      <h3 className="text-white font-bold text-lg leading-tight m-0">{member.name}</h3>
+                      <p className="text-gray-400 text-sm m-0">{member.role}</p>
+                      <div className="flex gap-2 mt-2 text-xs">
+                          <span className="bg-white/10 px-2 py-0.5 rounded text-white/80">
+                             {member.skills.length} Skills
+                          </span>
+                      </div>
+                   </div>
+                   <Button 
+                      type="text" 
+                      icon={<CloseOutlined className="text-white/60" />} 
+                      size="small"
+                      className="absolute top-2 right-2 hover:bg-white/10"
+                      onClick={() => {
+                          const svg = d3.select(svgRef.current);
+                          svg.dispatch('click'); // Trigger background reset
+                      }}
+                   />
+                </div>
+                
+                <div className="mt-4 flex justify-end">
+                   <Button 
+                      type="primary" 
+                      size="small" 
+                      className="bg-purple-600 hover:bg-purple-500 border-none flex items-center gap-1"
+                      onClick={() => onMemberClick && onMemberClick(member as Member)}
+                   >
+                      View Details Below <ArrowDownOutlined />
+                   </Button>
+                </div>
+            </div>
+         );
+      })()}
     </div>
   );
-};
+});
 
 export default SkillChart;
