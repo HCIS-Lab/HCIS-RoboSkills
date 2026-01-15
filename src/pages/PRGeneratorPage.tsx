@@ -3,6 +3,7 @@ import {
   Form,
   Input,
   Select,
+  AutoComplete,
   Button,
   Card,
   Modal,
@@ -27,6 +28,17 @@ import { PROFICIENCY_LABELS } from '../types/types';
 const { TextArea } = Input;
 const { Option } = Select;
 
+const COMMON_ROLES = [
+  'Professor',
+  'Postdoc',
+  'PhD Student',
+  'Master Student',
+  'Undergraduate Student',
+  'Research Assistant',
+  'Visiting Scholar',
+  'Alumni',
+];
+
 interface MemberFormData {
   name: string;
   role: string;
@@ -46,10 +58,25 @@ export const PRGeneratorPage: React.FC = () => {
   const [newSkillName, setNewSkillName] = useState('');
   const [newSkillCategories, setNewSkillCategories] = useState<string[]>([]);
 
+  // Calculate role options mixing common roles and existing roles
+  const roleOptions = React.useMemo(() => {
+    if (!data) return [];
+
+    const existingRoles = new Set(data.members.map((m) => m.role));
+    const allRoles = new Set([...COMMON_ROLES, ...existingRoles]);
+
+    return Array.from(allRoles)
+      .sort()
+      .map((role) => ({
+        value: role,
+        label: role,
+      }));
+  }, [data]);
+
   if (loading) {
     return (
       <div className='flex items-center justify-center h-96'>
-        <Spin size='large' tip='Loading data...' />
+        <Spin size='large' tip='Loading data...' fullscreen={true} />
       </div>
     );
   }
@@ -248,7 +275,7 @@ ${newSkillCategories
             type='primary'
             icon={<PlusOutlined />}
             onClick={handleNewMember}
-            className='w-full mb-4'
+            className='w-full !mb-4'
           >
             Add New Member
           </Button>
@@ -295,7 +322,15 @@ ${newSkillCategories
                 label={<span className='text-gray-300'>Role</span>}
                 rules={[{ required: true, message: 'Please enter role' }]}
               >
-                <Input placeholder='PhD Student' />
+                <AutoComplete
+                  options={roleOptions}
+                  placeholder='PhD Student'
+                  filterOption={(inputValue, option) =>
+                    option!.value
+                      .toUpperCase()
+                      .indexOf(inputValue.toUpperCase()) !== -1
+                  }
+                />
               </Form.Item>
               <Form.Item
                 name='email'
