@@ -59,7 +59,7 @@ const Navigation: React.FC<{
         trigger={null}
       >
         <div className='h-16 flex items-center justify-center border-b border-white/10 gap-2'>
-          <img src='/logo.svg' alt='RoboSkills Logo' className='w-8 h-8' />
+          <img src={`${import.meta.env.BASE_URL}logo.svg`} alt='RoboSkills Logo' className='w-8 h-8' />
           {!collapsed && (
             <span className='text-xl font-bold bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent'>
               RoboSkills
@@ -91,7 +91,7 @@ const Navigation: React.FC<{
         }}
       >
         <div className='flex items-center gap-2'>
-          <img src='/logo.svg' alt='RoboSkills Logo' className='w-8 h-8' />
+          <img src={`${import.meta.env.BASE_URL}logo.svg`} alt='RoboSkills Logo' className='w-8 h-8' />
           <span className='text-xl font-bold bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent'>
             RoboSkills
           </span>
@@ -197,7 +197,7 @@ const App: React.FC = () => {
         },
       }}
     >
-      <Router>
+      <Router basename={import.meta.env.BASE_URL}>
         <AppContent />
       </Router>
     </ConfigProvider>

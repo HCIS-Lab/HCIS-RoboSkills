@@ -7,7 +7,7 @@ import type {
   Subcategory,
 } from '../types/types';
 
-const DATA_URL = '/data/skillsData.json';
+const DATA_URL = `${import.meta.env.BASE_URL}data/skillsData.json`;
 
 export function useSkillsData() {
   const [data, setData] = useState<SkillsData | null>(null);
