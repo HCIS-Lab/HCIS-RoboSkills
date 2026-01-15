@@ -143,7 +143,7 @@ function binder<T extends Record<string, any>>(
 ): void {
   for (const key in options) {
     if (!component[key]) {
-      component[key] = getSet(key, component).bind(options);
+      (component as any)[key] = getSet(key, component).bind(options);
     }
   }
 }
@@ -1744,7 +1744,7 @@ export interface VennLayoutConfig {
 export function pack(layout: any): void {
   const packerConfig = layout.packerConfig();
 
-  layout.sets().forEach((set: VennSet, key: string) => {
+  layout.sets().forEach((set: VennSet) => {
     const innerRadius = set.innerRadius!;
     const center = set.center!;
     const children = set.nodes || [];
@@ -1787,7 +1787,7 @@ export function pack(layout: any): void {
 export function distribute(layout: any): void {
   const circles = layout.circles();
 
-  layout.sets().forEach((set: VennSet, key: string) => {
+  layout.sets().forEach((set: VennSet) => {
     const queue: any[] = [];
     const maxAttempt = 500;
     const inCircles: Circle[] = [];
@@ -1868,7 +1868,7 @@ export function force(layout: any, data: any[]): any {
   }
 
   const packingConfig = layout.packingConfig();
-  const size = layout.size();
+
   const sets = layout.sets();
 
   const padding = (forceSimulation as any).padding() || 3;
