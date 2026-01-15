@@ -82,6 +82,11 @@ const SkillChart: React.FC<SkillChartProps> = ({
     height: propHeight || 600,
   });
 
+  // State for selected user to manage visualization
+  const selectionRef = useRef<{ userId: string; rootSkillId: string } | null>(
+    null,
+  );
+
   // Update dimensions on mount/resize if not fixed props
   useEffect(() => {
     if (propWidth && propHeight) {
@@ -275,6 +280,7 @@ const SkillChart: React.FC<SkillChartProps> = ({
 
     // --- Zoom Behavior ---
     const container = svg.append('g').attr('class', 'chart-container');
+    const linkLayer = container.append('g').attr('class', 'user-links');
 
     const zoom = d3
       .zoom<SVGSVGElement, unknown>()
@@ -292,7 +298,11 @@ const SkillChart: React.FC<SkillChartProps> = ({
     svg.call(zoom);
 
     // Zoom focus helper
-    const zoomToNode = (d: SkillNode) => {
+    const zoomToNode = (
+      d: SkillNode,
+      highlightUserId?: string,
+      skipZoom?: boolean,
+    ) => {
       if (d.x === undefined || d.y === undefined) return;
       const zoomLevel = 4;
       const transform = d3.zoomIdentity
@@ -300,42 +310,118 @@ const SkillChart: React.FC<SkillChartProps> = ({
         .scale(zoomLevel)
         .translate(-d.x, -d.y);
 
-      svg.transition().duration(750).call(zoom.transform, transform);
+      if (!skipZoom) {
+        svg.transition().duration(750).call(zoom.transform, transform);
+      }
 
-      // Fade out others
-      container.selectAll('.skills g').transition().duration(500).style('opacity', 0.1);
-      container.selectAll('.categories circle').transition().duration(500).style('opacity', 0.05);
-      container.selectAll('.categories text').transition().duration(500).style('opacity', 0.05);
-      
-      // Highlight selected
-      const selectedGroup = container.selectAll('.skills g')
-        .filter((node: any) => node.id === d.id);
-        
-      selectedGroup
-        .transition().duration(500)
-        .style('opacity', 1);
+      if (highlightUserId) {
+        // Mode: User Highlighted
+        // 1. Fade OUT skills that DO NOT have this user
+        container
+          .selectAll('.skills g')
+          .transition()
+          .duration(500)
+          .style('opacity', (node: any) => {
+            const hasUser = node.people.some(
+              (p: any) => p.id === highlightUserId,
+            );
+            return hasUser ? 1 : 0.1;
+          });
 
-      // Show names and lines for the focused skill
-      selectedGroup.selectAll('.name-label')
-        .transition().duration(500)
-        .style('opacity', 1);
-        
-      selectedGroup.selectAll('.name-link')
-        .transition().duration(500)
-        .style('opacity', 0.5);
+        // 2. Inside visible skills, fade out OTHER users
+        container
+          .selectAll('.slice')
+          .transition()
+          .duration(500)
+          .style('opacity', (slice: any) => {
+            return slice.data.id === highlightUserId ? 1 : 0.1;
+          });
+      } else {
+        // Mode: Simple Skill Focus
+        container
+          .selectAll('.skills g')
+          .transition()
+          .duration(500)
+          .style('opacity', 0.1);
+        container
+          .selectAll('.categories circle')
+          .transition()
+          .duration(500)
+          .style('opacity', 0.05);
+        container
+          .selectAll('.categories text')
+          .transition()
+          .duration(500)
+          .style('opacity', 0.05);
+
+        // Highlight selected group
+        const selectedGroup = container
+          .selectAll('.skills g')
+          .filter((node: any) => node.id === d.id);
+
+        selectedGroup.transition().duration(500).style('opacity', 1);
+
+        // Reset Slice Opacity inside the selected group
+        selectedGroup
+          .selectAll('.slice')
+          .transition()
+          .duration(500)
+          .style('opacity', 1);
+
+        // Show names and lines for the focused skill
+        selectedGroup
+          .selectAll('.name-label')
+          .transition()
+          .duration(500)
+          .style('opacity', 1);
+
+        selectedGroup
+          .selectAll('.name-link')
+          .transition()
+          .duration(500)
+          .style('opacity', 0.5);
+      }
     };
 
     const resetZoom = () => {
+      selectionRef.current = null;
+      linkLayer.selectAll('*').remove(); // Clear links
+
       svg.transition().duration(750).call(zoom.transform, d3.zoomIdentity);
-       
+
       // Restore opacity
-      container.selectAll('.skills g').transition().duration(500).style('opacity', 1);
-      container.selectAll('.categories circle').transition().duration(500).style('opacity', 1);
-      container.selectAll('.categories text').transition().duration(500).style('opacity', 1);
+      container
+        .selectAll('.skills g')
+        .transition()
+        .duration(500)
+        .style('opacity', 1);
+      container
+        .selectAll('.categories circle')
+        .transition()
+        .duration(500)
+        .style('opacity', 1);
+      container
+        .selectAll('.categories text')
+        .transition()
+        .duration(500)
+        .style('opacity', 1);
+      container
+        .selectAll('.slice')
+        .transition()
+        .duration(500)
+        .style('opacity', 1);
 
       // Hide names and lines
-      container.selectAll('.name-label').transition().duration(500).style('opacity', 0);
-      container.selectAll('.name-link').transition().duration(500).style('opacity', 0);
+      container
+        .selectAll('.name-label')
+        .transition()
+        .duration(500)
+        .style('opacity', 0);
+      container
+        .selectAll('.name-link')
+        .transition()
+        .duration(500)
+        .style('opacity', 0);
     };
 
     // --- Draw Category Foci Backgrounds (Venn Circles) ---
@@ -466,6 +552,38 @@ const SkillChart: React.FC<SkillChartProps> = ({
 
       skillNodes.attr('transform', (d) => `translate(${d.x},${d.y})`);
 
+      // Update User Links logic
+      if (selectionRef.current) {
+        const { userId, rootSkillId } = selectionRef.current;
+        const rootNode = nodes.find((n) => n.id === rootSkillId);
+
+        if (rootNode && rootNode.x !== undefined && rootNode.y !== undefined) {
+          const userSkills = nodes.filter(
+            (n) =>
+              n.id !== rootSkillId && n.people.some((p) => p.id === userId),
+          );
+
+          // Create data for lines: from root to each userSkill
+          const links = userSkills.map((target) => ({
+            source: rootNode,
+            target: target,
+          }));
+
+          linkLayer
+            .selectAll('line')
+            .data(links)
+            .join('line')
+            .attr('x1', (d) => d.source.x!)
+            .attr('y1', (d) => d.source.y!)
+            .attr('x2', (d) => d.target.x!)
+            .attr('y2', (d) => d.target.y!)
+            .attr('stroke', '#fff')
+            .attr('stroke-width', 1)
+            .attr('stroke-opacity', 0.2)
+            .attr('stroke-dasharray', '5 3');
+        }
+      }
+
       // OPTIONAL: Draw Group Circles for Debugging
       // groupCircles.attr('cx', d => d.x!).attr('cy', d => d.y!);
     });
@@ -540,20 +658,35 @@ const SkillChart: React.FC<SkillChartProps> = ({
         .style('cursor', 'pointer')
         .style('transition', 'opacity 0.2s')
         .on('mouseover', function () {
+          // Logic: If selection inactive, hover works.
+          // If selection active, only hover if it matches user?
+          // Simplest: Always opacity 0.8 on hover, restore on mouseout
           d3.select(this).style('opacity', 0.8);
         })
         .on('mouseout', function () {
-          d3.select(this).style('opacity', 1);
+          // Restore opacity based on context
+          const userId = (d3.select(this).datum() as any).data.id;
+          if (
+            selectionRef.current &&
+            selectionRef.current.userId !== userId
+          ) {
+            d3.select(this).style('opacity', 0.1);
+          } else {
+            d3.select(this).style('opacity', 1);
+          }
         })
         .on('click', (event, slice) => {
           event.stopPropagation();
-          zoomToNode(d);
-          const fullMember = skillsData.members.find(
-            (m) => m.id === slice.data.id,
-          );
-          if (fullMember && onMemberClick) {
-            onMemberClick(fullMember as Member);
-          }
+          const userId = slice.data.id;
+          
+          // Set selection
+          selectionRef.current = { userId, rootSkillId: d.id };
+          
+          // Trigger visual updates
+          zoomToNode(d, userId, true);
+           
+          // Kick simulation to draw lines
+          skillSimulation.alpha(0.1).restart();
         })
         .append('title')
         .text(
