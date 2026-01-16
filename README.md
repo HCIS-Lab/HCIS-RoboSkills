@@ -1,59 +1,121 @@
-# RoboSkills - Robotic Skill Visualization
+<div align="center">
+  <img src="public/logo.svg" alt="RoboSkills Logo" width="120" />
+  <h1>RoboSkills</h1>
+  <h3>Robotic Skill Visualization & Analysis Platform</h3>
+  
+  <p>
+    An interactive, data-driven dashboard for visualizing robotic capabilities, <br />
+    analyzing skill gaps, and managing expertise distribution.
+  </p>
 
-RoboSkills is an interactive web application designed to visualize, analyze, and manage robotic skills. It provides a comprehensive view of skill dependencies, gaps, and categorizations using advanced visualization techniques.
+  <p>
+    <a href="#features">Features</a> •
+    <a href="#tech-stack">Tech Stack</a> •
+    <a href="#getting-started">Getting Started</a> •
+    <a href="#license">License</a>
+  </p>
+</div>
 
-## Features
+---
 
-- **Interactive Skill Chart**: Visualize skills and their relationships using dynamic D3.js Venn diagrams and force-directed graphs.
-- **Gap Analysis**: Identify missing capabilities and improved required areas with a dedicated gap analysis tool.
-- **Skill Management**: (Planned) Interfaces for adding, editing, and organizing robotic capabilities.
-- **Responsive Design**: Built with Ant Design and Tailwind CSS for a modern, responsive user interface.
+## 🚀 Overview
 
-## Tech Stack
+**RoboSkills** is a cutting-edge web application designed to bridge the gap between complex robotic data and actionable insights. By leveraging advanced visualization techniques—including forced-directed graphs and Venn diagrams—it provides a clear map of skill dependencies, overlaps, and critical gaps in robotic development.
 
-- **Frontend Framework**: [React](https://react.dev/)
-- **Build Tool**: [Vite](https://vitejs.dev/)
-- **Visualization**: [D3.js](https://d3js.org/)
-- **UI Component Library**: [Ant Design](https://ant.design/)
-- **Styling**: [Tailwind CSS](https://tailwindcss.com/)
-- **Language**: [TypeScript](https://www.typescriptlang.org/)
+## ✨ Key Features
 
-## Getting Started
+- **📊 Interactive Skill Chart**
+  - Visualize complex relationships with dynamic D3.js Venn diagrams.
+  - Explore skill clusters using interactive force-directed graphs.
+  
+- **📉 Gap Analysis Engine**
+  - Identify missing capabilities with precision.
+  - Visualize expertise distribution (`Novice` to `Expert`) across different domains.
+
+- **🎨 Modern User Interface**
+  - Built with **Ant Design** and **Tailwind CSS** for a sleek, glassmorphism-inspired aesthetic.
+  - Fully responsive layout ensuring a seamless experience on all devices.
+
+## 🛠️ Tech Stack
+
+Built with modern, high-performance technologies:
+
+| Category | Technology | Description |
+| :--- | :--- | :--- |
+| **Framework** | ![React](https://img.shields.io/badge/React-20232A?style=flat&logo=react&logoColor=61DAFB) | Frontend library for building UIs |
+| **Language** | ![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=flat&logo=typescript&logoColor=white) | Typed superset of JavaScript |
+| **Build Tool** | ![Vite](https://img.shields.io/badge/Vite-646CFF?style=flat&logo=vite&logoColor=white) | Next Generation Frontend Tooling |
+| **Styling** | ![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=flat&logo=tailwind-css&logoColor=white) | Utility-first CSS framework |
+| **Components** | ![Ant Design](https://img.shields.io/badge/Ant_Design-0170FE?style=flat&logo=ant-design&logoColor=white) | Enterprise-class UI design language |
+| **Data Viz** | ![D3.js](https://img.shields.io/badge/D3.js-F9A03C?style=flat&logo=d3.js&logoColor=white) | Dynamic data visualization library |
+
+## 🏁 Getting Started
+
+Follow these steps to set up the project locally.
 
 ### Prerequisites
 
-- Node.js (v18 or higher recommended)
-- npm or yarn
+- **Node.js** (v18+ recommended)
+- **npm** or **yarn**
 
 ### Installation
 
-1.  Clone the repository:
-
+1.  **Clone the repository**
     ```bash
     git clone https://github.com/your-username/robotic-skill-visualize.git
     cd robotic-skill-visualize
     ```
 
-2.  Install dependencies:
-
+2.  **Install dependencies**
     ```bash
     npm install
+    # or
+    yarn install
     ```
 
-3.  Start the development server:
-
+3.  **Start the development server**
     ```bash
     npm run dev
+    # or
+    yarn dev
     ```
 
-4.  Open your browser and navigate to `http://localhost:5173` (or the port shown in your terminal).
+4.  **Explore**
+    Open `http://localhost:5173` in your browser to view the app.
 
-## Building for Production
+## 🎨 Customization
 
-To create a production build:
+**RoboSkills** is designed to be easily adaptable for your own lab, company, or team.
+
+### using Your Own Data
+
+The application drives its visualizations from a central JSON file. To use your own data:
+
+1.  Navigate to `public/data/skillsData.json`.
+2.  Update the `members` array with your team's information.
+3.  Modify the `skills` array to reflect the specific competencies you want to track.
+
+The application will automatically reflect these changes in the Skill Chart and Gap Analysis dashboards.
+
+### ✨ Visual Data Editor
+
+We provide a built-in visual tool to help you generate the necessary JSON Structure for adding members or skills!
+
+1.  Start the application (`npm run dev`)
+2.  Navigate to the **Update Data** page (e.g., `http://localhost:5173/update`)
+3.  Use the form to add members, skills, and generate the JSON snippet
+4.  Copy the generated JSON into your `public/data/skillsData.json` file
+
+## 📦 Building for Production
+
+To generate a production-ready build:
 
 ```bash
 npm run build
 ```
 
-The output will be in the `dist` directory.
+The output will be optimized and placed in the `dist` directory.
+
+## 📄 License
+
+This project is licensed under the terms of the [LICENSE](./LICENSE) file.
