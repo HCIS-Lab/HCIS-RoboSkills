@@ -48,6 +48,7 @@ interface MemberFormData {
 
 export const PRGeneratorPage: React.FC = () => {
   const { data, loading, error } = useSkillsData();
+  const [messageApi, contextHolder] = message.useMessage();
   const [form] = Form.useForm();
   const [skills, setSkills] = useState<MemberSkill[]>([]);
   const [prContent, setPrContent] = useState<string>('');
@@ -62,46 +63,88 @@ export const PRGeneratorPage: React.FC = () => {
   const [prType, setPrType] = useState<'member' | 'skill' | null>(null);
 
   const createPR = async () => {
-    if (!githubToken) {
-      void message.error('Please enter your GitHub Personal Access Token');
+    const sanitizedToken = githubToken.trim();
+    if (!sanitizedToken) {
+      void messageApi.error(
+        'Please enter a valid GitHub Personal Access Token',
+      );
       return;
     }
 
     setCreatingPR(true);
     try {
-      // Dynamic import to avoid issues if not used
       const { Octokit } = await import('octokit');
-      const octokit = new Octokit({ auth: githubToken });
+      const octokit = new Octokit({ auth: sanitizedToken });
 
-      const OWNER = 'whats2000';
-      const REPO = 'RoboSkills';
+      const UPSTREAM_OWNER = 'whats2000';
+      const UPSTREAM_REPO = 'RoboSkills';
       const FILE_PATH = 'public/data/skillsData.json';
       const BRANCH_NAME = `content-update-${Date.now()}`;
 
-      // 1. Get current Main SHA
-      const { data: refData } = await octokit.request(
-        'GET /repos/{owner}/{repo}/git/ref/heads/main',
-        {
-          owner: OWNER,
-          repo: REPO,
-        },
-      );
-      const mainSha = refData.object.sha;
+      // 0. Get current authenticated user
+      const { data: user } = await octokit.request('GET /user');
+      const currentUser = user.login;
 
-      // 2. Create new branch
-      await octokit.request('POST /repos/{owner}/{repo}/git/refs', {
-        owner: OWNER,
-        repo: REPO,
-        ref: `refs/heads/${BRANCH_NAME}`,
-        sha: mainSha,
+      // Determine where to create branch/commit (Origin)
+      // If user is the upstream owner, use upstream. Otherwise assume fork.
+      const branchOwner =
+        currentUser === UPSTREAM_OWNER ? UPSTREAM_OWNER : currentUser;
+      const branchRepo = UPSTREAM_REPO; // Assuming fork has same name, reasonable default
+
+      // Check if fork exists/user has access
+      try {
+        await octokit.request('GET /repos/{owner}/{repo}', {
+          owner: branchOwner,
+          repo: branchRepo,
+        });
+      } catch (e) {
+        if (branchOwner !== UPSTREAM_OWNER) {
+          throw new Error(
+            `Could not find repository ${branchOwner}/${branchRepo}. Please fork the repository first.`,
+          );
+        } else {
+          throw e;
+        }
+      }
+
+      // 1. Get current Main SHA from UPSTREAM (to ensure we base off latest official)
+      await octokit.request('GET /repos/{owner}/{repo}/git/ref/heads/main', {
+        owner: UPSTREAM_OWNER,
+        repo: UPSTREAM_REPO,
       });
 
-      // 3. Get current file content (to ensure we have latest and the SHA for update)
+      // 2. Create new branch on ORIGIN (User's fork or Upstream)
+      // We will base the new branch on the main branch of the ORIGIN repo.
+      try {
+        // Get Main SHA from ORIGIN (Fork) to ensure existence
+        const { data: originRef } = await octokit.request(
+          'GET /repos/{owner}/{repo}/git/ref/heads/main',
+          {
+            owner: branchOwner,
+            repo: branchRepo,
+          },
+        );
+        const originSha = originRef.object.sha;
+
+        await octokit.request('POST /repos/{owner}/{repo}/git/refs', {
+          owner: branchOwner,
+          repo: branchRepo,
+          ref: `refs/heads/${BRANCH_NAME}`,
+          sha: originSha,
+        });
+      } catch (e: any) {
+        console.error('Failed to create branch on origin', e);
+        throw new Error(
+          `Failed to create branch on ${branchOwner}/${branchRepo}. Ensure the fork exists and your token has "repo" scope.`,
+        );
+      }
+
+      // 3. Get current file content from UPSTREAM (to edit latest version)
       const { data: fileData } = await octokit.request(
         'GET /repos/{owner}/{repo}/contents/{path}',
         {
-          owner: OWNER,
-          repo: REPO,
+          owner: UPSTREAM_OWNER,
+          repo: UPSTREAM_REPO,
           path: FILE_PATH,
         },
       );
@@ -151,37 +194,68 @@ export const PRGeneratorPage: React.FC = () => {
           updatedContent.skills.push(newSkill);
         }
 
-        // 4. Commit file update
+        // 4. Commit file update to ORIGIN (Fork)
+        // We need to get the SHA of the file in the FORK if it exists, roughly.
+        // Actually, for 'create/update' file API, we need the blob SHA of the file we are replacing.
+        // If we are on a new branch on the fork, the file is same as wherever we branched from.
+        // But the API requires strict SHA matching for updates.
+        // We read from UPSTREAM. If we write to FORK, does the fork have this file? Yes.
+        // But does it have the SAME sha? Maybe not if fork is outdated.
+        // Safer: Get file SHA from the branch we just created on ORIGIN.
+
+        const { data: branchFileData } = await octokit.request(
+          'GET /repos/{owner}/{repo}/contents/{path}',
+          {
+            owner: branchOwner,
+            repo: branchRepo,
+            path: FILE_PATH,
+            ref: BRANCH_NAME,
+          },
+        );
+
+        if (Array.isArray(branchFileData) || branchFileData.type !== 'file') {
+          throw new Error('Unexpected file type in branch');
+        }
+
         await octokit.request('PUT /repos/{owner}/{repo}/contents/{path}', {
-          owner: OWNER,
-          repo: REPO,
+          owner: branchOwner,
+          repo: branchRepo,
           path: FILE_PATH,
           message: `chore: update data for ${prType === 'skill' ? newSkillName : form.getFieldValue('name')}`,
           content: btoa(JSON.stringify(updatedContent, null, 2)),
           branch: BRANCH_NAME,
-          sha: fileData.sha,
+          sha: branchFileData.sha,
         });
 
-        // 5. Create PR
+        // 5. Create PR on UPSTREAM
+        // Head: if different repo, username:branch
+        const headRef =
+          branchOwner === UPSTREAM_OWNER
+            ? BRANCH_NAME
+            : `${branchOwner}:${BRANCH_NAME}`;
+
         const { data: prData } = await octokit.request(
           'POST /repos/{owner}/{repo}/pulls',
           {
-            owner: OWNER,
-            repo: REPO,
+            owner: UPSTREAM_OWNER,
+            repo: UPSTREAM_REPO,
             title: `Update: ${prType === 'skill' ? newSkillName : form.getFieldValue('name')}`,
             body: prContent,
-            head: BRANCH_NAME,
+            head: headRef,
             base: 'main',
           },
         );
 
-        void message.success('Pull Request created successfully!');
+        void messageApi.success('Pull Request created successfully!');
         window.open(prData.html_url, '_blank');
         setModalOpen(false);
       }
     } catch (error: any) {
       console.error(error);
-      void message.error(`Failed to create PR: ${error.message}`);
+      const msg = error.message.includes('refs')
+        ? 'Failed to create branch. Check Token Scopes (needs "repo") or Fork status.'
+        : error.message;
+      void messageApi.error(`Failed: ${msg}`);
     } finally {
       setCreatingPR(false);
     }
@@ -310,7 +384,7 @@ ${(() => {
 
   const generateNewSkillPR = () => {
     if (!newSkillName || newSkillCategories.length === 0) {
-      void message.warning(
+      void messageApi.warning(
         'Please provide skill name and select at least one category',
       );
       return;
@@ -359,7 +433,7 @@ ${newSkillCategories
 
   const copyToClipboard = () => {
     void navigator.clipboard.writeText(prContent);
-    void message.success('PR content copied to clipboard!');
+    void messageApi.success('PR content copied to clipboard!');
   };
 
   const handleEditMember = (member: LabMember) => {
@@ -383,6 +457,7 @@ ${newSkillCategories
 
   return (
     <div className='space-y-8'>
+      {contextHolder}
       {/* Header */}
       <div className='text-center'>
         <h1 className='text-4xl font-bold bg-gradient-to-r from-green-400 via-emerald-400 to-teal-400 bg-clip-text text-transparent mb-4'>
@@ -644,10 +719,40 @@ ${newSkillCategories
             <h4 className='font-semibold text-blue-400 mb-2'>
               Automatic PR Creation
             </h4>
-            <p className='text-sm text-gray-400 mb-3'>
-              Enter your GitHub Personal Access Token (PAT) with 'repo' scope to
-              automatically create this PR.
-            </p>
+            <div className='text-sm text-gray-400 mb-3 space-y-2'>
+              <p>
+                Enter your GitHub Personal Access Token (PAT) to automatically
+                create this PR.
+              </p>
+              <div className='bg-black/30 p-2 rounded text-xs'>
+                <p className='font-semibold text-gray-300'>
+                  Required Permissions:
+                </p>
+                <ul className='list-disc list-inside ml-1 space-y-1 mt-1'>
+                  <li>
+                    <span className='text-yellow-400'>repo</span> (Full control
+                    of private repositories)
+                  </li>
+                  <li>
+                    OR for Fine-grained tokens:
+                    <span className='text-green-400'> Contents</span> (Read &
+                    write) +
+                    <span className='text-green-400'> Pull requests</span> (Read
+                    & write)
+                  </li>
+                </ul>
+              </div>
+              <p>
+                <a
+                  href='https://github.com/settings/tokens/new?scopes=repo&description=RoboSkills%20PR%20Bot'
+                  target='_blank'
+                  rel='noopener noreferrer'
+                  className='text-blue-400 hover:text-blue-300 underline'
+                >
+                  Click here to generate a token with 'repo' scope
+                </a>
+              </p>
+            </div>
             <div className='flex gap-2'>
               <Input.Password
                 placeholder='ghp_...'
