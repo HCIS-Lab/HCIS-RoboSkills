@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   Table,
   Tag,
@@ -17,6 +17,7 @@ import {
 } from '@ant-design/icons';
 import { useSkillsData, calculateSkillGaps } from '../hooks/useSkillsData';
 import type { SkillGap } from '../types/types';
+import GapDistributionChart from '../components/GapDistributionChart';
 
 export const GapAnalysisPage: React.FC = () => {
   const { data, loading, error } = useSkillsData();
@@ -36,6 +37,17 @@ export const GapAnalysisPage: React.FC = () => {
         .length,
     };
   }, [gaps]);
+
+  // State for chart filtering - must be before any early returns
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+
+  // Filter gaps based on selected category from chart
+  const filteredGaps = useMemo(() => {
+    if (!selectedCategory) return gaps;
+    return gaps.filter((gap) =>
+      gap.categories.some((cat) => cat.id === selectedCategory),
+    );
+  }, [gaps, selectedCategory]);
 
   if (loading) {
     return (
@@ -227,6 +239,23 @@ export const GapAnalysisPage: React.FC = () => {
         </Col>
       </Row>
 
+      {/* Distribution Chart */}
+      <Card className='glass-card'>
+        <h2 className='text-xl font-semibold text-white mb-4'>
+          📊 Skill Distribution Overview
+        </h2>
+        <p className='text-gray-400 text-sm mb-4'>
+          Inner ring shows categories, outer ring shows skills colored by health
+          status. Click a category to filter, click a skill to see team
+          expertise details.
+        </p>
+        <GapDistributionChart
+          gaps={gaps}
+          categories={data.categories}
+          members={data.members}
+        />
+      </Card>
+
       {/* Cross-Domain Skills */}
       <Card className='glass-card'>
         <h2 className='text-xl font-semibold text-white mb-4'>
@@ -271,7 +300,7 @@ export const GapAnalysisPage: React.FC = () => {
           All Skills Coverage
         </h2>
         <Table
-          dataSource={gaps}
+          dataSource={filteredGaps}
           columns={columns}
           rowKey={(record) => record.skill.id}
           pagination={{ pageSize: 10 }}
