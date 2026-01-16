@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import {
   Table,
   Tag,
@@ -37,17 +37,6 @@ export const GapAnalysisPage: React.FC = () => {
         .length,
     };
   }, [gaps]);
-
-  // State for chart filtering - must be before any early returns
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-
-  // Filter gaps based on selected category from chart
-  const filteredGaps = useMemo(() => {
-    if (!selectedCategory) return gaps;
-    return gaps.filter((gap) =>
-      gap.categories.some((cat) => cat.id === selectedCategory),
-    );
-  }, [gaps, selectedCategory]);
 
   if (loading) {
     return (
@@ -300,7 +289,7 @@ export const GapAnalysisPage: React.FC = () => {
           All Skills Coverage
         </h2>
         <Table
-          dataSource={filteredGaps}
+          dataSource={gaps}
           columns={columns}
           rowKey={(record) => record.skill.id}
           pagination={{ pageSize: 10 }}

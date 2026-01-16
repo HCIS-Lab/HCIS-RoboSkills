@@ -27,7 +27,6 @@
 - **📊 Interactive Skill Chart**
   - Visualize complex relationships with dynamic D3.js Venn diagrams.
   - Explore skill clusters using interactive force-directed graphs.
-  
 - **📉 Gap Analysis Engine**
   - Identify missing capabilities with precision.
   - Visualize expertise distribution (`Novice` to `Expert`) across different domains.
@@ -40,14 +39,14 @@
 
 Built with modern, high-performance technologies:
 
-| Category | Technology | Description |
-| :--- | :--- | :--- |
-| **Framework** | ![React](https://img.shields.io/badge/React-20232A?style=flat&logo=react&logoColor=61DAFB) | Frontend library for building UIs |
-| **Language** | ![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=flat&logo=typescript&logoColor=white) | Typed superset of JavaScript |
-| **Build Tool** | ![Vite](https://img.shields.io/badge/Vite-646CFF?style=flat&logo=vite&logoColor=white) | Next Generation Frontend Tooling |
-| **Styling** | ![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=flat&logo=tailwind-css&logoColor=white) | Utility-first CSS framework |
-| **Components** | ![Ant Design](https://img.shields.io/badge/Ant_Design-0170FE?style=flat&logo=ant-design&logoColor=white) | Enterprise-class UI design language |
-| **Data Viz** | ![D3.js](https://img.shields.io/badge/D3.js-F9A03C?style=flat&logo=d3.js&logoColor=white) | Dynamic data visualization library |
+| Category       | Technology                                                                                                    | Description                         |
+| :------------- | :------------------------------------------------------------------------------------------------------------ | :---------------------------------- |
+| **Framework**  | ![React](https://img.shields.io/badge/React-20232A?style=flat&logo=react&logoColor=61DAFB)                    | Frontend library for building UIs   |
+| **Language**   | ![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=flat&logo=typescript&logoColor=white)      | Typed superset of JavaScript        |
+| **Build Tool** | ![Vite](https://img.shields.io/badge/Vite-646CFF?style=flat&logo=vite&logoColor=white)                        | Next Generation Frontend Tooling    |
+| **Styling**    | ![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=flat&logo=tailwind-css&logoColor=white) | Utility-first CSS framework         |
+| **Components** | ![Ant Design](https://img.shields.io/badge/Ant_Design-0170FE?style=flat&logo=ant-design&logoColor=white)      | Enterprise-class UI design language |
+| **Data Viz**   | ![D3.js](https://img.shields.io/badge/D3.js-F9A03C?style=flat&logo=d3.js&logoColor=white)                     | Dynamic data visualization library  |
 
 ## 🏁 Getting Started
 
@@ -61,12 +60,14 @@ Follow these steps to set up the project locally.
 ### Installation
 
 1.  **Clone the repository**
+
     ```bash
     git clone https://github.com/your-username/robotic-skill-visualize.git
     cd robotic-skill-visualize
     ```
 
 2.  **Install dependencies**
+
     ```bash
     npm install
     # or
@@ -74,6 +75,7 @@ Follow these steps to set up the project locally.
     ```
 
 3.  **Start the development server**
+
     ```bash
     npm run dev
     # or
