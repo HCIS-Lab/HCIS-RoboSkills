@@ -15,7 +15,12 @@ import {
   Spin,
   Checkbox,
 } from 'antd';
-import { PlusOutlined, CopyOutlined, GithubOutlined } from '@ant-design/icons';
+import {
+  PlusOutlined,
+  CopyOutlined,
+  GithubOutlined,
+  DeleteOutlined,
+} from '@ant-design/icons';
 import { useSkillsData, getSkillById } from '../hooks/useSkillsData';
 import type {
   LabMember,
@@ -60,7 +65,10 @@ export const PRGeneratorPage: React.FC = () => {
   const [newSkillCategories, setNewSkillCategories] = useState<string[]>([]);
   const [githubToken, setGithubToken] = useState('');
   const [creatingPR, setCreatingPR] = useState(false);
-  const [prType, setPrType] = useState<'member' | 'skill' | null>(null);
+  const [prType, setPrType] = useState<
+    'member' | 'skill' | 'delete-member' | null
+  >(null);
+  const [hasChanges, setHasChanges] = useState(false);
 
   const createPR = async () => {
     const sanitizedToken = githubToken.trim();
@@ -183,6 +191,10 @@ export const PRGeneratorPage: React.FC = () => {
               m.id === selectedMember.id ? updatedMember : m,
             );
           }
+        } else if (prType === 'delete-member' && selectedMember) {
+          updatedContent.members = updatedContent.members.filter(
+            (m: any) => m.id !== selectedMember.id,
+          );
         } else if (prType === 'skill') {
           const skillId = newSkillName.toLowerCase().replace(/\s+/g, '-');
           const newSkill = {
@@ -221,7 +233,11 @@ export const PRGeneratorPage: React.FC = () => {
           owner: branchOwner,
           repo: branchRepo,
           path: FILE_PATH,
-          message: `chore: update data for ${prType === 'skill' ? newSkillName : form.getFieldValue('name')}`,
+          message: `chore: ${
+            prType === 'delete-member' && selectedMember
+              ? `remove member ${selectedMember.name}`
+              : `update data for ${prType === 'skill' ? newSkillName : form.getFieldValue('name')}`
+          }`,
           content: btoa(JSON.stringify(updatedContent, null, 2)),
           branch: BRANCH_NAME,
           sha: branchFileData.sha,
@@ -234,12 +250,21 @@ export const PRGeneratorPage: React.FC = () => {
             ? BRANCH_NAME
             : `${branchOwner}:${BRANCH_NAME}`;
 
+        let prTitle = '';
+        if (prType === 'skill') {
+          prTitle = `Update: ${newSkillName}`;
+        } else if (prType === 'delete-member' && selectedMember) {
+          prTitle = `Remove Member: ${selectedMember.name}`;
+        } else {
+          prTitle = `Update: ${form.getFieldValue('name')}`;
+        }
+
         const { data: prData } = await octokit.request(
           'POST /repos/{owner}/{repo}/pulls',
           {
             owner: UPSTREAM_OWNER,
             repo: UPSTREAM_REPO,
-            title: `Update: ${prType === 'skill' ? newSkillName : form.getFieldValue('name')}`,
+            title: prTitle,
             body: prContent,
             head: headRef,
             base: 'main',
@@ -275,6 +300,57 @@ export const PRGeneratorPage: React.FC = () => {
         label: role,
       }));
   }, [data]);
+
+  // --- Change Detection Logic ---
+  const checkForChanges = (
+    currentFormValues: MemberFormData,
+    currentSkills: MemberSkill[],
+  ) => {
+    if (editMode === 'new') {
+      // For new profile, enable if name and role are present
+      return !!currentFormValues.name && !!currentFormValues.role;
+    }
+
+    if (!selectedMember) return false;
+
+    const nameChanged = currentFormValues.name !== selectedMember.name;
+    const roleChanged = currentFormValues.role !== selectedMember.role;
+    const emailChanged =
+      (currentFormValues.email || '') !== (selectedMember.email || '');
+    const githubChanged =
+      (currentFormValues.github || '') !== (selectedMember.github || '');
+
+    // Compare skills
+    if (currentSkills.length !== selectedMember.skills.length) return true;
+
+    const sortedCurrent = [...currentSkills].sort((a, b) =>
+      a.skillId.localeCompare(b.skillId),
+    );
+    const sortedOriginal = [...selectedMember.skills].sort((a, b) =>
+      a.skillId.localeCompare(b.skillId),
+    );
+    const skillsChanged =
+      JSON.stringify(sortedCurrent) !== JSON.stringify(sortedOriginal);
+
+    return (
+      nameChanged ||
+      roleChanged ||
+      emailChanged ||
+      githubChanged ||
+      skillsChanged
+    );
+  };
+
+  // Trigger check when skills change
+  React.useEffect(() => {
+    const values = form.getFieldsValue();
+    setHasChanges(checkForChanges(values, skills));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [skills, editMode, selectedMember]);
+
+  const onFormValuesChange = (_: any, allValues: MemberFormData) => {
+    setHasChanges(checkForChanges(allValues, skills));
+  };
 
   if (loading) {
     return (
@@ -382,6 +458,27 @@ ${(() => {
     setModalOpen(true);
   };
 
+  const generateRemoveMemberPR = () => {
+    if (!selectedMember) return;
+
+    const content = `## Remove Lab Member: ${selectedMember.name}
+
+### Description
+This PR removes the profile for **${selectedMember.name}** (${selectedMember.role}) from the lab members list.
+
+### Changes to \`public/data/skillsData.json\`
+
+Remove the member entry with ID \`${selectedMember.id}\`.
+
+### Checklist
+- [ ] Confirmed member departure or removal request
+`;
+
+    setPrContent(content);
+    setPrType('delete-member');
+    setModalOpen(true);
+  };
+
   const generateNewSkillPR = () => {
     if (!newSkillName || newSkillCategories.length === 0) {
       void messageApi.warning(
@@ -446,6 +543,7 @@ ${newSkillCategories
       email: member.email,
       github: member.github,
     });
+    setHasChanges(false); // Reset changes on select
   };
 
   const handleNewMember = () => {
@@ -453,6 +551,7 @@ ${newSkillCategories
     setSelectedMember(null);
     setSkills([]);
     form.resetFields();
+    setHasChanges(false);
   };
 
   return (
@@ -512,7 +611,12 @@ ${newSkillCategories
               : `Edit: ${selectedMember?.name}`}
           </h2>
 
-          <Form form={form} layout='vertical' onFinish={generatePRContent}>
+          <Form
+            form={form}
+            layout='vertical'
+            onFinish={generatePRContent}
+            onValuesChange={onFormValuesChange}
+          >
             <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
               <Form.Item
                 name='name'
@@ -646,9 +750,26 @@ ${newSkillCategories
               </div>
             )}
 
-            <Button type='primary' htmlType='submit' icon={<GithubOutlined />}>
-              Generate PR Content
-            </Button>
+            <div className='flex gap-2'>
+              <Button
+                type='primary'
+                htmlType='submit'
+                icon={<GithubOutlined />}
+                disabled={!hasChanges}
+                className='flex-1'
+              >
+                Generate PR Content
+              </Button>
+              {editMode === 'edit' && selectedMember && (
+                <Button
+                  danger
+                  icon={<DeleteOutlined />}
+                  onClick={generateRemoveMemberPR}
+                >
+                  Remove Member
+                </Button>
+              )}
+            </div>
           </Form>
         </Card>
       </div>
