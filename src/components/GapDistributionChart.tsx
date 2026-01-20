@@ -1,4 +1,5 @@
 import React, { useMemo, useState, useRef, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import * as d3 from 'd3';
 import { Avatar, Tooltip } from 'antd';
 import { UserOutlined, TeamOutlined, StarOutlined } from '@ant-design/icons';
@@ -61,6 +62,7 @@ const GapDistributionChart: React.FC<GapDistributionChartProps> = ({
   categories,
   members,
 }) => {
+  const navigate = useNavigate();
   const radarRef = useRef<SVGSVGElement>(null);
   const barRef = useRef<SVGSVGElement>(null);
 
@@ -634,10 +636,11 @@ const GapDistributionChart: React.FC<GapDistributionChartProps> = ({
                           title={`${member.name} - ${member.role}`}
                         >
                           <div
-                            className='flex items-center gap-1.5 px-2 py-1 rounded transition-colors hover:brightness-110'
+                            className='flex items-center gap-1.5 px-2 py-1 rounded transition-colors hover:brightness-110 cursor-pointer'
                             style={{
                               backgroundColor: `${PROFICIENCY_COLORS[level]}25`,
                             }}
+                            onClick={() => navigate(`/?member=${member.name}`)}
                           >
                             <Avatar
                               size={18}
