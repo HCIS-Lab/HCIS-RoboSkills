@@ -195,6 +195,14 @@
         "caregiver",
         "care-recipient"
       ]
+    },
+    {
+      "id": "test-skill-2",
+      "name": "Test Skill 2",
+      "description": "Description for Test Skill 2",
+      "belongsTo": [
+        "test-create-category"
+      ]
     }
   ],
   "members": [
