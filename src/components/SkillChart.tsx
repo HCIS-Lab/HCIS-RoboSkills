@@ -378,6 +378,12 @@ const SkillChart: React.FC<SkillChartProps> = React.memo(
       ) => {
         if (d.x === undefined || d.y === undefined) return;
 
+        // Raise the focused node to render it last (on top)
+        container
+          .selectAll('.skills g')
+          .filter((n: any) => n.id === d.id)
+          .raise();
+
         currentFocusedSkillId = d.id;
 
         const zoomLevel = 4;
