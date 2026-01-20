@@ -464,6 +464,17 @@ const SkillChart: React.FC<SkillChartProps> = React.memo(
           // If User Selected, KEEP Highlight
           if (selectionRef.current?.userId) {
             applyUserHighlight(selectionRef.current.userId);
+            // Restore Venn opacity as we are zooming out
+            container
+              .selectAll('.categories circle')
+              .transition()
+              .duration(500)
+              .style('opacity', 1);
+            container
+              .selectAll('.categories text')
+              .transition()
+              .duration(500)
+              .style('opacity', 1);
           } else {
             // If No User, Reset All
             resetOpacity();
