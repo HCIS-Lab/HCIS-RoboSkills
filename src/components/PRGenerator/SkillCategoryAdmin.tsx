@@ -334,10 +334,78 @@ export const SkillCategoryAdmin: React.FC<SkillCategoryAdminProps> = ({
     });
   };
 
-  const handleGeneratePR = () => {
-    if (pendingChanges.length > 0) {
-      onGenerateBatchPR(pendingChanges);
+  // Validate pending changes for conflicts
+  const validatePendingChanges = (): { valid: boolean; errors: string[] } => {
+    const errors: string[] = [];
+
+    // Get IDs of categories being deleted
+    const deletedCategoryIds = pendingChanges
+      .filter((c) => c.type === 'delete-category')
+      .map((c) => c.data.id);
+
+    // Get IDs of skills being deleted
+    const deletedSkillIds = pendingChanges
+      .filter((c) => c.type === 'delete-skill')
+      .map((c) => c.data.id);
+
+    // Check if any added/updated skill references a deleted category
+    for (const change of pendingChanges) {
+      if (change.type === 'add-skill' || change.type === 'update-skill') {
+        const skillCategories: string[] = change.data.belongsTo || [];
+        for (const catId of skillCategories) {
+          if (deletedCategoryIds.includes(catId)) {
+            const catName =
+              categories.find((c) => c.id === catId)?.name || catId;
+            errors.push(
+              `Skill "${change.data.name}" references category "${catName}" which is being deleted`,
+            );
+          }
+        }
+      }
     }
+
+    // Check if any updated category is also being deleted
+    for (const change of pendingChanges) {
+      if (change.type === 'update-category') {
+        if (deletedCategoryIds.includes(change.data.id)) {
+          errors.push(
+            `Category "${change.data.name}" is both being updated and deleted`,
+          );
+        }
+      }
+      if (change.type === 'update-skill') {
+        if (deletedSkillIds.includes(change.data.id)) {
+          errors.push(
+            `Skill "${change.data.name}" is both being updated and deleted`,
+          );
+        }
+      }
+    }
+
+    return { valid: errors.length === 0, errors };
+  };
+
+  const handleGeneratePR = () => {
+    if (pendingChanges.length === 0) return;
+
+    const validation = validatePendingChanges();
+    if (!validation.valid) {
+      Modal.error({
+        title: 'Invalid Changes Detected',
+        content: (
+          <ul className='list-disc pl-4'>
+            {validation.errors.map((err, i) => (
+              <li key={i} className='text-red-400'>
+                {err}
+              </li>
+            ))}
+          </ul>
+        ),
+      });
+      return;
+    }
+
+    onGenerateBatchPR(pendingChanges);
   };
 
   return (
