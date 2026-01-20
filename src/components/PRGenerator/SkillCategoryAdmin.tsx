@@ -69,10 +69,28 @@ export const SkillCategoryAdmin: React.FC<SkillCategoryAdminProps> = ({
   const [isAddingSkill, setIsAddingSkill] = useState(false);
   const [skillForm] = Form.useForm();
 
-  // Add a pending change
+  // Add a pending change (prevents duplicates)
   const addPendingChange = (change: Omit<PendingChange, 'id'>) => {
-    const id = `change-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
-    setPendingChanges((prev) => [...prev, { ...change, id }]);
+    setPendingChanges((prev) => {
+      // Check if a change with same type and data.id already exists
+      const existingIndex = prev.findIndex(
+        (c) => c.type === change.type && c.data.id === change.data.id,
+      );
+
+      if (existingIndex >= 0) {
+        // Replace existing change with updated one
+        const updated = [...prev];
+        updated[existingIndex] = {
+          ...change,
+          id: prev[existingIndex].id,
+        };
+        return updated;
+      }
+
+      // Add new change
+      const id = `change-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
+      return [...prev, { ...change, id }];
+    });
   };
 
   // Remove a pending change
