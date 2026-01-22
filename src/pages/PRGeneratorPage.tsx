@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Form, message, Spin, Empty } from 'antd';
 import { useSkillsData, getSkillById } from '../hooks/useSkillsData';
 import type { LabMember, MemberSkill } from '../types/types';
@@ -45,6 +45,31 @@ export const PRGeneratorPage: React.FC = () => {
   >(null);
   const [hasChanges, setHasChanges] = useState(false);
   const [batchChanges, setBatchChanges] = useState<any[]>([]);
+  const [targetRepo, setTargetRepo] = useState({
+    owner: '',
+    repo: '',
+  });
+
+  // Auto-detect repository from GitHub Pages URL
+  useEffect(() => {
+    const detectRepo = () => {
+      const url = window.location.href;
+      // GitHub Pages patterns:
+      // https://username.github.io/repo-name/
+      // https://username.github.io/ (user/org page)
+      const match = url.match(/https:\/\/([^.]+)\.github\.io\/([^\/]+)/);
+
+      if (match) {
+        const [, owner, repo] = match;
+        setTargetRepo({ owner, repo });
+      } else {
+        // Fallback for local development or custom domains
+        setTargetRepo({ owner: 'whats2000', repo: 'RoboSkills' });
+      }
+    };
+
+    detectRepo();
+  }, []);
 
   const createPR = async () => {
     const sanitizedToken = githubToken.trim();
@@ -60,8 +85,8 @@ export const PRGeneratorPage: React.FC = () => {
       const { Octokit } = await import('octokit');
       const octokit = new Octokit({ auth: sanitizedToken });
 
-      const UPSTREAM_OWNER = 'whats2000';
-      const UPSTREAM_REPO = 'RoboSkills';
+      const UPSTREAM_OWNER = targetRepo.owner;
+      const UPSTREAM_REPO = targetRepo.repo;
       const FILE_PATH = 'public/data/skillsData.json';
       const BRANCH_NAME = `content-update-${Date.now()}`;
 
@@ -69,11 +94,9 @@ export const PRGeneratorPage: React.FC = () => {
       const { data: user } = await octokit.request('GET /user');
       const currentUser = user.login;
 
-      // Determine where to create branch/commit (Origin)
-      // If user is the upstream owner, use upstream. Otherwise assume fork.
-      const branchOwner =
-        currentUser === UPSTREAM_OWNER ? UPSTREAM_OWNER : currentUser;
-      const branchRepo = UPSTREAM_REPO; // Assuming fork has same name, reasonable default
+      // All operations happen on the user's own repository
+      const branchOwner = currentUser;
+      const branchRepo = UPSTREAM_REPO; // Assuming repository has same name
 
       // Check if fork exists/user has access
       try {
@@ -82,25 +105,21 @@ export const PRGeneratorPage: React.FC = () => {
           repo: branchRepo,
         });
       } catch (e) {
-        if (branchOwner !== UPSTREAM_OWNER) {
-          throw new Error(
-            `Could not find repository ${branchOwner}/${branchRepo}. Please fork the repository first.`,
-          );
-        } else {
-          throw e;
-        }
+        throw new Error(
+          `Could not find repository ${branchOwner}/${branchRepo}. Please ensure the repository exists.`,
+        );
       }
 
-      // 1. Get current Main SHA from UPSTREAM (to ensure we base off latest official)
+      // 1. Get current Main SHA from the user's own repository
       await octokit.request('GET /repos/{owner}/{repo}/git/ref/heads/main', {
-        owner: UPSTREAM_OWNER,
-        repo: UPSTREAM_REPO,
+        owner: branchOwner,
+        repo: branchRepo,
       });
 
-      // 2. Create new branch on ORIGIN (User's fork or Upstream)
-      // We will base the new branch on the main branch of the ORIGIN repo.
+      // 2. Create new branch on user's repository
+      // We will base the new branch on the main branch of the user's repo.
       try {
-        // Get Main SHA from ORIGIN (Fork) to ensure existence
+        // Get Main SHA from user's repository to ensure existence
         const { data: originRef } = await octokit.request(
           'GET /repos/{owner}/{repo}/git/ref/heads/main',
           {
@@ -117,18 +136,18 @@ export const PRGeneratorPage: React.FC = () => {
           sha: originSha,
         });
       } catch (e: any) {
-        console.error('Failed to create branch on origin', e);
+        console.error('Failed to create branch on repository', e);
         throw new Error(
-          `Failed to create branch on ${branchOwner}/${branchRepo}. Ensure the fork exists and your token has "repo" scope.`,
+          `Failed to create branch on ${branchOwner}/${branchRepo}. Ensure your token has "repo" scope.`,
         );
       }
 
-      // 3. Get current file content from UPSTREAM (to edit latest version)
+      // 3. Get current file content from user's repository (to edit latest version)
       const { data: fileData } = await octokit.request(
         'GET /repos/{owner}/{repo}/contents/{path}',
         {
-          owner: UPSTREAM_OWNER,
-          repo: UPSTREAM_REPO,
+          owner: branchOwner,
+          repo: branchRepo,
           path: FILE_PATH,
         },
       );
@@ -198,14 +217,8 @@ export const PRGeneratorPage: React.FC = () => {
           }
         }
 
-        // 4. Commit file update to ORIGIN (Fork)
-        // We need to get the SHA of the file in the FORK if it exists, roughly.
-        // Actually, for 'create/update' file API, we need the blob SHA of the file we are replacing.
-        // If we are on a new branch on the fork, the file is same as wherever we branched from.
-        // But the API requires strict SHA matching for updates.
-        // We read from UPSTREAM. If we write to FORK, does the fork have this file? Yes.
-        // But does it have the SAME sha? Maybe not if fork is outdated.
-        // Safer: Get file SHA from the branch we just created on ORIGIN.
+        // 4. Commit file update to user's repository
+        // Get file SHA from the branch we just created on user's repository
 
         const { data: branchFileData } = await octokit.request(
           'GET /repos/{owner}/{repo}/contents/{path}',
@@ -238,12 +251,8 @@ export const PRGeneratorPage: React.FC = () => {
           sha: branchFileData.sha,
         });
 
-        // 5. Create PR on UPSTREAM
-        // Head: if different repo, username:branch
-        const headRef =
-          branchOwner === UPSTREAM_OWNER
-            ? BRANCH_NAME
-            : `${branchOwner}:${BRANCH_NAME}`;
+        // 5. Create PR on user's repository (from branch to main)
+        const headRef = BRANCH_NAME;
 
         let prTitle = '';
         if (prType === 'batch') {
@@ -257,8 +266,8 @@ export const PRGeneratorPage: React.FC = () => {
         const { data: prData } = await octokit.request(
           'POST /repos/{owner}/{repo}/pulls',
           {
-            owner: UPSTREAM_OWNER,
-            repo: UPSTREAM_REPO,
+            owner: branchOwner,
+            repo: branchRepo,
             title: prTitle,
             body: prContent,
             head: headRef,
@@ -564,6 +573,8 @@ ${JSON.stringify(
         onCreatePR={createPR}
         onCopyToClipboard={copyToClipboard}
         creatingPR={creatingPR}
+        targetRepo={targetRepo}
+        onTargetRepoChange={setTargetRepo}
       />
     </div>
   );

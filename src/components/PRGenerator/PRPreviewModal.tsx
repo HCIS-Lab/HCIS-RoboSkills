@@ -13,6 +13,8 @@ interface PRPreviewModalProps {
   onCreatePR: () => void;
   onCopyToClipboard: () => void;
   creatingPR: boolean;
+  targetRepo: { owner: string; repo: string };
+  onTargetRepoChange: (repo: { owner: string; repo: string }) => void;
 }
 
 export const PRPreviewModal: React.FC<PRPreviewModalProps> = ({
@@ -24,6 +26,8 @@ export const PRPreviewModal: React.FC<PRPreviewModalProps> = ({
   onCreatePR,
   onCopyToClipboard,
   creatingPR,
+  targetRepo,
+  onTargetRepoChange,
 }) => {
   return (
     <Modal
@@ -34,6 +38,35 @@ export const PRPreviewModal: React.FC<PRPreviewModalProps> = ({
       footer={null}
     >
       <div className='space-y-4'>
+        <div className='bg-yellow-500/10 border border-yellow-500/20 p-4 rounded-lg'>
+          <h4 className='font-semibold text-yellow-400 mb-2'>
+            Target Repository
+          </h4>
+          <div className='text-sm text-gray-400 mb-3'>
+            <p className='mb-2'>
+              Repository auto-detected from GitHub Pages URL. You can edit if
+              needed for custom domains.
+            </p>
+          </div>
+          <div className='grid grid-cols-2 gap-2'>
+            <Input
+              placeholder='Repository Owner (e.g., your-username)'
+              value={targetRepo.owner}
+              onChange={(e) =>
+                onTargetRepoChange({ ...targetRepo, owner: e.target.value })
+              }
+              prefix={<GithubOutlined />}
+            />
+            <Input
+              placeholder='Repository Name (e.g., RoboSkills)'
+              value={targetRepo.repo}
+              onChange={(e) =>
+                onTargetRepoChange({ ...targetRepo, repo: e.target.value })
+              }
+            />
+          </div>
+        </div>
+
         <div className='bg-blue-500/10 border border-blue-500/20 p-4 rounded-lg'>
           <h4 className='font-semibold text-blue-400 mb-2'>
             Automatic PR Creation
