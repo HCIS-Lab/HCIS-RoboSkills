@@ -75,7 +75,7 @@ Update the configuration files to match your team's information:
 
 - Update the title and description in `index.html`
 - Modify the `vite.config.ts` for your deployment base path if needed.
-  If your repository name is `my-team-skills`, set:
+  For example, if deploying to GitHub Pages under a repository named `my-team-skills`, set:
   ```ts
     base: '/my-team-skills/',
   ```
