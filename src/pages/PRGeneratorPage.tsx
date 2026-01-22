@@ -1,0 +1,572 @@
+import React, { useState } from 'react';
+import { Form, message, Spin, Empty } from 'antd';
+import { useSkillsData, getSkillById } from '../hooks/useSkillsData';
+import type { LabMember, MemberSkill } from '../types/types';
+import { PROFICIENCY_LABELS } from '../types/types';
+import {
+  MemberList,
+  MemberForm,
+  PRPreviewModal,
+  SkillCategoryAdmin,
+} from '../components/PRGenerator';
+
+const COMMON_ROLES = [
+  'Professor',
+  'Postdoc',
+  'PhD Student',
+  'Master Student',
+  'Undergraduate Student',
+  'Research Assistant',
+  'Visiting Scholar',
+  'Alumni',
+];
+
+interface MemberFormData {
+  name: string;
+  role: string;
+  email?: string;
+  github?: string;
+}
+
+export const PRGeneratorPage: React.FC = () => {
+  const { data, loading, error } = useSkillsData();
+  const [messageApi, contextHolder] = message.useMessage();
+  const [form] = Form.useForm();
+  const [skills, setSkills] = useState<MemberSkill[]>([]);
+  const [prContent, setPrContent] = useState<string>('');
+  const [modalOpen, setModalOpen] = useState(false);
+  const [editMode, setEditMode] = useState<'new' | 'edit'>('new');
+  const [selectedMember, setSelectedMember] = useState<LabMember | null>(null);
+
+  const [githubToken, setGithubToken] = useState('');
+  const [creatingPR, setCreatingPR] = useState(false);
+  const [prType, setPrType] = useState<
+    'member' | 'delete-member' | 'batch' | null
+  >(null);
+  const [hasChanges, setHasChanges] = useState(false);
+  const [batchChanges, setBatchChanges] = useState<any[]>([]);
+
+  const createPR = async () => {
+    const sanitizedToken = githubToken.trim();
+    if (!sanitizedToken) {
+      void messageApi.error(
+        'Please enter a valid GitHub Personal Access Token',
+      );
+      return;
+    }
+
+    setCreatingPR(true);
+    try {
+      const { Octokit } = await import('octokit');
+      const octokit = new Octokit({ auth: sanitizedToken });
+
+      const UPSTREAM_OWNER = 'whats2000';
+      const UPSTREAM_REPO = 'RoboSkills';
+      const FILE_PATH = 'public/data/skillsData.json';
+      const BRANCH_NAME = `content-update-${Date.now()}`;
+
+      // 0. Get current authenticated user
+      const { data: user } = await octokit.request('GET /user');
+      const currentUser = user.login;
+
+      // Determine where to create branch/commit (Origin)
+      // If user is the upstream owner, use upstream. Otherwise assume fork.
+      const branchOwner =
+        currentUser === UPSTREAM_OWNER ? UPSTREAM_OWNER : currentUser;
+      const branchRepo = UPSTREAM_REPO; // Assuming fork has same name, reasonable default
+
+      // Check if fork exists/user has access
+      try {
+        await octokit.request('GET /repos/{owner}/{repo}', {
+          owner: branchOwner,
+          repo: branchRepo,
+        });
+      } catch (e) {
+        if (branchOwner !== UPSTREAM_OWNER) {
+          throw new Error(
+            `Could not find repository ${branchOwner}/${branchRepo}. Please fork the repository first.`,
+          );
+        } else {
+          throw e;
+        }
+      }
+
+      // 1. Get current Main SHA from UPSTREAM (to ensure we base off latest official)
+      await octokit.request('GET /repos/{owner}/{repo}/git/ref/heads/main', {
+        owner: UPSTREAM_OWNER,
+        repo: UPSTREAM_REPO,
+      });
+
+      // 2. Create new branch on ORIGIN (User's fork or Upstream)
+      // We will base the new branch on the main branch of the ORIGIN repo.
+      try {
+        // Get Main SHA from ORIGIN (Fork) to ensure existence
+        const { data: originRef } = await octokit.request(
+          'GET /repos/{owner}/{repo}/git/ref/heads/main',
+          {
+            owner: branchOwner,
+            repo: branchRepo,
+          },
+        );
+        const originSha = originRef.object.sha;
+
+        await octokit.request('POST /repos/{owner}/{repo}/git/refs', {
+          owner: branchOwner,
+          repo: branchRepo,
+          ref: `refs/heads/${BRANCH_NAME}`,
+          sha: originSha,
+        });
+      } catch (e: any) {
+        console.error('Failed to create branch on origin', e);
+        throw new Error(
+          `Failed to create branch on ${branchOwner}/${branchRepo}. Ensure the fork exists and your token has "repo" scope.`,
+        );
+      }
+
+      // 3. Get current file content from UPSTREAM (to edit latest version)
+      const { data: fileData } = await octokit.request(
+        'GET /repos/{owner}/{repo}/contents/{path}',
+        {
+          owner: UPSTREAM_OWNER,
+          repo: UPSTREAM_REPO,
+          path: FILE_PATH,
+        },
+      );
+
+      if (!Array.isArray(fileData) && fileData.type === 'file') {
+        const decodedContent = atob(fileData.content.replace(/\n/g, ''));
+        const currentContent = JSON.parse(decodedContent);
+
+        // Update content locally
+        const updatedContent = { ...currentContent };
+
+        if (prType === 'member') {
+          if (editMode === 'new' && !selectedMember) {
+            // Adding a new member
+            const memberId = `member-${Date.now()}`;
+            const newMember = {
+              id: memberId,
+              name: form.getFieldValue('name'),
+              role: form.getFieldValue('role'),
+              email: form.getFieldValue('email'),
+              github: form.getFieldValue('github'),
+              skills: skills,
+            };
+            updatedContent.members.push(newMember);
+          } else if (editMode === 'edit' && selectedMember) {
+            // Updating member
+            const updatedMember = {
+              ...selectedMember,
+              name: form.getFieldValue('name'),
+              role: form.getFieldValue('role'),
+              email: form.getFieldValue('email'),
+              github: form.getFieldValue('github'),
+              skills: skills,
+            };
+            updatedContent.members = updatedContent.members.map((m: any) =>
+              m.id === selectedMember.id ? updatedMember : m,
+            );
+          }
+        } else if (prType === 'delete-member' && selectedMember) {
+          updatedContent.members = updatedContent.members.filter(
+            (m: any) => m.id !== selectedMember.id,
+          );
+        } else if (prType === 'batch' && batchChanges.length > 0) {
+          // Apply all batch changes
+          for (const change of batchChanges) {
+            if (change.type === 'add-skill') {
+              updatedContent.skills.push(change.data);
+            } else if (change.type === 'update-skill') {
+              updatedContent.skills = updatedContent.skills.map((s: any) =>
+                s.id === change.data.id ? change.data : s,
+              );
+            } else if (change.type === 'delete-skill') {
+              updatedContent.skills = updatedContent.skills.filter(
+                (s: any) => s.id !== change.data.id,
+              );
+            } else if (change.type === 'add-category') {
+              updatedContent.categories.push(change.data);
+            } else if (change.type === 'update-category') {
+              updatedContent.categories = updatedContent.categories.map(
+                (c: any) => (c.id === change.data.id ? change.data : c),
+              );
+            } else if (change.type === 'delete-category') {
+              updatedContent.categories = updatedContent.categories.filter(
+                (c: any) => c.id !== change.data.id,
+              );
+            }
+          }
+        }
+
+        // 4. Commit file update to ORIGIN (Fork)
+        // We need to get the SHA of the file in the FORK if it exists, roughly.
+        // Actually, for 'create/update' file API, we need the blob SHA of the file we are replacing.
+        // If we are on a new branch on the fork, the file is same as wherever we branched from.
+        // But the API requires strict SHA matching for updates.
+        // We read from UPSTREAM. If we write to FORK, does the fork have this file? Yes.
+        // But does it have the SAME sha? Maybe not if fork is outdated.
+        // Safer: Get file SHA from the branch we just created on ORIGIN.
+
+        const { data: branchFileData } = await octokit.request(
+          'GET /repos/{owner}/{repo}/contents/{path}',
+          {
+            owner: branchOwner,
+            repo: branchRepo,
+            path: FILE_PATH,
+            ref: BRANCH_NAME,
+          },
+        );
+
+        if (Array.isArray(branchFileData) || branchFileData.type !== 'file') {
+          throw new Error('Unexpected file type in branch');
+        }
+
+        await octokit.request('PUT /repos/{owner}/{repo}/contents/{path}', {
+          owner: branchOwner,
+          repo: branchRepo,
+          path: FILE_PATH,
+          message: `chore: ${(() => {
+            if (prType === 'delete-member' && selectedMember) {
+              return `remove member ${selectedMember.name}`;
+            }
+            if (prType === 'batch')
+              return `batch update: ${batchChanges.length} changes`;
+            return `update data for ${form.getFieldValue('name')}`;
+          })()}`,
+          content: btoa(JSON.stringify(updatedContent, null, 2)),
+          branch: BRANCH_NAME,
+          sha: branchFileData.sha,
+        });
+
+        // 5. Create PR on UPSTREAM
+        // Head: if different repo, username:branch
+        const headRef =
+          branchOwner === UPSTREAM_OWNER
+            ? BRANCH_NAME
+            : `${branchOwner}:${BRANCH_NAME}`;
+
+        let prTitle = '';
+        if (prType === 'batch') {
+          prTitle = `Batch Update: ${batchChanges.length} changes`;
+        } else if (prType === 'delete-member' && selectedMember) {
+          prTitle = `Remove Member: ${selectedMember.name}`;
+        } else {
+          prTitle = `Update: ${form.getFieldValue('name')}`;
+        }
+
+        const { data: prData } = await octokit.request(
+          'POST /repos/{owner}/{repo}/pulls',
+          {
+            owner: UPSTREAM_OWNER,
+            repo: UPSTREAM_REPO,
+            title: prTitle,
+            body: prContent,
+            head: headRef,
+            base: 'main',
+          },
+        );
+
+        void messageApi.success('Pull Request created successfully!');
+        window.open(prData.html_url, '_blank');
+        setModalOpen(false);
+      }
+    } catch (error: any) {
+      console.error(error);
+      const msg = error.message.includes('refs')
+        ? 'Failed to create branch. Check Token Scopes (needs "repo") or Fork status.'
+        : error.message;
+      void messageApi.error(`Failed: ${msg}`);
+    } finally {
+      setCreatingPR(false);
+    }
+  };
+
+  // Calculate role options mixing common roles and existing roles
+  const roleOptions = React.useMemo(() => {
+    if (!data) return [];
+
+    const existingRoles = new Set(data.members.map((m) => m.role));
+    const allRoles = new Set([...COMMON_ROLES, ...existingRoles]);
+
+    return Array.from(allRoles)
+      .sort()
+      .map((role) => ({
+        value: role,
+        label: role,
+      }));
+  }, [data]);
+
+  // --- Change Detection Logic ---
+  const checkForChanges = (
+    currentFormValues: MemberFormData,
+    currentSkills: MemberSkill[],
+  ) => {
+    if (editMode === 'new') {
+      // For new profile, enable if name and role are present
+      return !!currentFormValues.name && !!currentFormValues.role;
+    }
+
+    if (!selectedMember) return false;
+
+    const nameChanged = currentFormValues.name !== selectedMember.name;
+    const roleChanged = currentFormValues.role !== selectedMember.role;
+    const emailChanged =
+      (currentFormValues.email || '') !== (selectedMember.email || '');
+    const githubChanged =
+      (currentFormValues.github || '') !== (selectedMember.github || '');
+
+    // Compare skills
+    if (currentSkills.length !== selectedMember.skills.length) return true;
+
+    const sortedCurrent = [...currentSkills].sort((a, b) =>
+      a.skillId.localeCompare(b.skillId),
+    );
+    const sortedOriginal = [...selectedMember.skills].sort((a, b) =>
+      a.skillId.localeCompare(b.skillId),
+    );
+    const skillsChanged =
+      JSON.stringify(sortedCurrent) !== JSON.stringify(sortedOriginal);
+
+    return (
+      nameChanged ||
+      roleChanged ||
+      emailChanged ||
+      githubChanged ||
+      skillsChanged
+    );
+  };
+
+  // Trigger check when skills change
+  React.useEffect(() => {
+    const values = form.getFieldsValue();
+    setHasChanges(checkForChanges(values, skills));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [skills, editMode, selectedMember]);
+
+  const onFormValuesChange = (_: any, allValues: MemberFormData) => {
+    setHasChanges(checkForChanges(allValues, skills));
+  };
+
+  if (loading) {
+    return (
+      <div className='flex items-center justify-center h-96'>
+        <Spin size='large' tip='Loading data...' fullscreen={true} />
+      </div>
+    );
+  }
+
+  if (error || !data) {
+    return (
+      <div className='flex items-center justify-center h-96'>
+        <Empty description={error || 'No data available'} />
+      </div>
+    );
+  }
+
+  const generatePRContent = (formData: MemberFormData) => {
+    const memberId =
+      editMode === 'edit' && selectedMember
+        ? selectedMember.id
+        : `member-${Date.now()}`;
+
+    const newMember = {
+      id: memberId,
+      name: formData.name,
+      role: formData.role,
+      email: formData.email,
+      github: formData.github,
+      skills: skills,
+    };
+
+    const action = editMode === 'new' ? 'Add new' : 'Update';
+
+    const content = `## ${action} Lab Member: ${formData.name}
+
+### Description
+This PR ${editMode === 'new' ? 'adds' : 'updates'} the profile for **${formData.name}** (${formData.role}).
+
+### Changes to \`public/data/skillsData.json\`
+
+${editMode === 'new' ? 'Add the following member to the `members` array:' : 'Replace the existing member entry with:'}
+
+\`\`\`json
+${JSON.stringify(newMember, null, 2)}
+\`\`\`
+
+### Skills Summary
+${skills
+  .map((s) => {
+    const skill = getSkillById(data.skills, s.skillId);
+    const categories = skill?.belongsTo
+      .map((id) => data.categories.find((c) => c.id === id)?.name)
+      .join(', ');
+    return `- **${skill?.name}** (${PROFICIENCY_LABELS[s.proficiency]}) - spans: ${categories}`;
+  })
+  .join('\n')}
+
+### Category Distribution
+${(() => {
+  const weights: Record<string, number> = {};
+  for (const s of skills) {
+    const skill = data.skills.find((sk) => sk.id === s.skillId);
+    if (!skill) continue;
+    for (const catId of skill.belongsTo) {
+      weights[catId] = (weights[catId] || 0) + 1;
+    }
+  }
+  return Object.entries(weights)
+    .map(([catId, count]) => {
+      const cat = data.categories.find((c) => c.id === catId);
+      return `- ${cat?.name}: ${count} skills`;
+    })
+    .join('\n');
+})()}
+
+### Checklist
+- [ ] Member information is accurate
+- [ ] Skills are correctly assigned
+- [ ] Proficiency levels are appropriate
+`;
+
+    setPrContent(content);
+    setPrType('member');
+    setModalOpen(true);
+  };
+
+  const generateRemoveMemberPR = () => {
+    if (!selectedMember) return;
+
+    const content = `## Remove Lab Member: ${selectedMember.name}
+
+### Description
+This PR removes the profile for **${selectedMember.name}** (${selectedMember.role}) from the lab members list.
+
+### Changes to \`public/data/skillsData.json\`
+
+Remove the member entry with ID \`${selectedMember.id}\`.
+
+### Checklist
+- [ ] Confirmed member departure or removal request
+`;
+
+    setPrContent(content);
+    setPrType('delete-member');
+    setModalOpen(true);
+  };
+
+  const copyToClipboard = () => {
+    void navigator.clipboard.writeText(prContent);
+    void messageApi.success('PR content copied to clipboard!');
+  };
+
+  const handleEditMember = (member: LabMember) => {
+    setEditMode('edit');
+    setSelectedMember(member);
+    setSkills(member.skills);
+    form.setFieldsValue({
+      name: member.name,
+      role: member.role,
+      email: member.email,
+      github: member.github,
+    });
+    setHasChanges(false);
+  };
+
+  const handleNewMember = () => {
+    setEditMode('new');
+    setSelectedMember(null);
+    setSkills([]);
+    form.resetFields();
+    setHasChanges(false);
+  };
+
+  const handleBatchPR = (changes: any[]) => {
+    setBatchChanges(changes);
+    setPrType('batch');
+
+    const content = `## Batch Update: Skills & Categories
+
+### Description
+This PR contains ${changes.length} changes to skills and/or categories.
+
+### Changes Summary
+${changes.map((c) => `- **${c.type.replace('-', ' ').toUpperCase()}**: ${c.description}`).join('\n')}
+
+### Detailed Changes
+\`\`\`json
+${JSON.stringify(
+  changes.map((c) => ({ type: c.type, data: c.data })),
+  null,
+  2,
+)}
+\`\`\`
+
+### Checklist
+- [ ] All changes are appropriate
+- [ ] No breaking changes to existing data
+`;
+
+    setPrContent(content);
+    setModalOpen(true);
+  };
+
+  return (
+    <div className='space-y-8'>
+      {contextHolder}
+      {/* Header */}
+      <div className='text-center'>
+        <h1 className='text-4xl font-bold bg-gradient-to-r from-green-400 via-emerald-400 to-teal-400 bg-clip-text text-transparent mb-4'>
+          Data Update & PR Generator
+        </h1>
+        <p className='text-gray-400 max-w-2xl mx-auto'>
+          Add or update lab member profiles and skills. Generate Pull Request
+          content for data updates.
+        </p>
+      </div>
+
+      <div className='grid grid-cols-1 lg:grid-cols-3 gap-6'>
+        <MemberList
+          members={data.members}
+          selectedMemberId={selectedMember?.id ?? null}
+          onSelectMember={handleEditMember}
+          onNewMember={handleNewMember}
+        />
+
+        <MemberForm
+          form={form}
+          editMode={editMode}
+          selectedMember={selectedMember}
+          skills={skills}
+          allSkills={data.skills}
+          categories={data.categories}
+          roleOptions={roleOptions}
+          hasChanges={hasChanges}
+          onSkillsChange={setSkills}
+          onFormValuesChange={onFormValuesChange}
+          onGeneratePR={generatePRContent}
+          onRemoveMember={generateRemoveMemberPR}
+        />
+      </div>
+
+      <SkillCategoryAdmin
+        categories={data.categories}
+        skills={data.skills}
+        members={data.members}
+        onGenerateBatchPR={handleBatchPR}
+      />
+
+      <PRPreviewModal
+        open={modalOpen}
+        onClose={() => setModalOpen(false)}
+        prContent={prContent}
+        githubToken={githubToken}
+        onGithubTokenChange={setGithubToken}
+        onCreatePR={createPR}
+        onCopyToClipboard={copyToClipboard}
+        creatingPR={creatingPR}
+      />
+    </div>
+  );
+};
+
+export default PRGeneratorPage;
