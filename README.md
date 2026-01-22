@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="public/hcis-lab-logo-dark.svg" alt="HCIS Lab Logo" width="200" />
+  <img src="public/hcis-lab-logo.svg" alt="HCIS Lab Logo" width="200" />
   <h1>HCIS Lab - RoboSkills</h1>
   <h3>Robotic Skill Visualization & Analysis Platform</h3>
   
