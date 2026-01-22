@@ -85,17 +85,14 @@ export const PRGeneratorPage: React.FC = () => {
       const { Octokit } = await import('octokit');
       const octokit = new Octokit({ auth: sanitizedToken });
 
+      const REPO_OWNER = targetRepo.owner;
       const REPO_NAME = targetRepo.repo;
       const FILE_PATH = 'public/data/skillsData.json';
       const BRANCH_NAME = `content-update-${Date.now()}`;
 
-      // 0. Get current authenticated user
-      const { data: user } = await octokit.request('GET /user');
-      const currentUser = user.login;
-
-      // All operations happen on the user's own repository
-      const branchOwner = currentUser;
-      const branchRepo = REPO_NAME; // Assuming repository has same name
+      // All operations happen on the detected repository
+      const branchOwner = REPO_OWNER;
+      const branchRepo = REPO_NAME;
 
       // Check if fork exists/user has access
       try {
