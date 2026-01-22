@@ -85,7 +85,7 @@ const Navigation: React.FC<{
           </Link>
           {!collapsed && (
             <a
-              href='https://github.com/whats2000/RoboSkills'
+              href='https://github.com/HCIS-Lab/HCIS-RoboSkills'
               target='_blank'
               rel='noopener noreferrer'
               className='!text-white hover:!text-indigo-400 transition-colors flex items-center'
@@ -130,7 +130,7 @@ const Navigation: React.FC<{
         </Link>
         <div className='flex items-center gap-4'>
           <a
-            href='https://github.com/whats2000/RoboSkills'
+            href='https://github.com/HCIS-Lab/HCIS-RoboSkills'
             target='_blank'
             rel='noopener noreferrer'
             className='!text-white hover:!text-indigo-400 transition-colors flex items-center'
