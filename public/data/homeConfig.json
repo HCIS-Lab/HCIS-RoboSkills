@@ -1,19 +1,19 @@
 {
   "hero": {
     "title": "RoboSkills",
-    "subtitle": "Team Skills Visualization & Management Platform",
-    "description": "Track, analyze, and enhance your team's capabilities across research and development. Visualize skill distributions, identify gaps, and manage team expertise effectively."
+    "subtitle": "Robotic Skill Visualization & Analysis Platform",
+    "description": "An interactive, data-driven dashboard for visualizing robotic capabilities, analyzing skill gaps, and managing expertise distribution across Human-Centered Physical AI research."
   },
   "lab": {
-    "name": "Your Lab",
-    "fullName": "Your Laboratory Full Name",
-    "institution": "Your University or Institution",
-    "description": "Replace this with your lab's research focus and mission. Describe your team's expertise, research areas, and goals. This is a template - customize it to showcase what makes your lab unique.",
-    "website": "https://yourlab.example.com",
+    "name": "HCIS Lab",
+    "fullName": "Human-centered Intelligent Systems Laboratory",
+    "institution": "Department of Computer Science, National Yang Ming Chiao Tung University",
+    "description": "HCIS Lab develops Human-Centered Physical AI Systems with focus on intelligent driving systems, assistive robotics, computer vision, and machine learning. Our research advances safe and trustworthy AI for real-world applications in autonomous systems and human-robot interaction.",
+    "website": "https://sites.google.com/site/yitingchen0524/",
     "director": {
-      "name": "Dr. Your Name",
-      "title": "Principal Investigator",
-      "email": "contact@yourlab.example.com"
+      "name": "Dr. Yi-Ting Chen (陳奕廷)",
+      "title": "Associate Professor",
+      "email": "ychen@cs.nycu.edu.tw"
     }
   },
   "features": [

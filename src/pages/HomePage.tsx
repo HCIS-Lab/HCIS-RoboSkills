@@ -139,6 +139,14 @@ const HomePage: React.FC = () => {
         </div>
         <div className='container mx-auto px-4 py-20 md:py-32 relative z-10'>
           <div className='text-center max-w-4xl mx-auto'>
+            {/* HCIS Lab Logo */}
+            <div className='flex justify-center mb-8'>
+              <img
+                src={`${import.meta.env.BASE_URL}hcis-lab-logo-dark.svg`}
+                alt='HCIS Lab Logo'
+                className='h-32 md:h-40 w-auto drop-shadow-2xl animate-fade-in'
+              />
+            </div>
             <Title
               level={1}
               className='!text-5xl md:!text-7xl !mb-6 !font-bold'
@@ -358,7 +366,7 @@ const HomePage: React.FC = () => {
           <div className='text-center text-white/60'>
             <Space size='middle'>
               <a
-                href='https://github.com/whats2000/RoboSkills'
+                href='https://github.com/HCIS-Lab/HCIS-RoboSkills'
                 target='_blank'
                 rel='noopener noreferrer'
                 className='!text-white/60 hover:!text-white transition-colors'

@@ -1,11 +1,11 @@
 <div align="center">
-  <img src="public/logo.svg" alt="RoboSkills Logo" width="120" />
-  <h1>RoboSkills</h1>
+  <img src="public/hcis-lab-logo-dark.svg" alt="HCIS Lab Logo" width="200" />
+  <h1>HCIS Lab - RoboSkills</h1>
   <h3>Robotic Skill Visualization & Analysis Platform</h3>
   
   <p>
     An interactive, data-driven dashboard for visualizing robotic capabilities, <br />
-    analyzing skill gaps, and managing expertise distribution.
+    analyzing skill gaps, and managing expertise distribution in Human-Centered Physical AI research.
   </p>
 
   <br />
@@ -13,11 +13,15 @@
   <br />
 
   <p>
-    <a href="https://whats2000.github.io/RoboSkills/">Live Demo</a> •
+    <a href="https://hcis-lab.github.io/HCIS-RoboSkills/">Live Demo</a> •
     <a href="#features">Features</a> •
     <a href="#tech-stack">Tech Stack</a> •
     <a href="#getting-started">Getting Started</a> •
-    <a href="#license">License</a>
+    <a href="https://sites.google.com/site/yitingchen0524/">HCIS Lab</a>
+  </p>
+
+  <p>
+    <em>Built using the <a href="https://github.com/whats2000/RoboSkills">RoboSkills</a> template</em>
   </p>
 </div>
 
@@ -25,7 +29,7 @@
 
 ## 🚀 Overview
 
-**RoboSkills** is a cutting-edge web application designed to bridge the gap between complex robotic data and actionable insights. By leveraging advanced visualization techniques—including forced-directed graphs and Venn diagrams—it provides a clear map of skill dependencies, overlaps, and critical gaps in robotic development.
+**RoboSkills** is a cutting-edge web application developed by the Human-centered Intelligent Systems Laboratory (HCIS Lab) at National Yang Ming Chiao Tung University. It bridges the gap between complex robotic data and actionable insights. By leveraging advanced visualization techniques—including forced-directed graphs and Venn diagrams—it provides a clear map of skill dependencies, overlaps, and critical gaps in Human-Centered Physical AI research and development.
 
 ## ✨ Key Features
 
@@ -67,8 +71,8 @@ Follow these steps to set up the project locally.
 1.  **Clone the repository**
 
     ```bash
-    git clone https://github.com/your-username/robotic-skill-visualize.git
-    cd robotic-skill-visualize
+    git clone https://github.com/HCIS-Lab/HCIS-RoboSkills.git
+    cd HCIS-RoboSkills
     ```
 
 2.  **Install dependencies**
@@ -90,29 +94,6 @@ Follow these steps to set up the project locally.
 4.  **Explore**
     Open `http://localhost:5173` in your browser to view the app.
 
-## 🎨 Customization
-
-**RoboSkills** is designed to be easily adaptable for your own lab, company, or team.
-
-### using Your Own Data
-
-The application drives its visualizations from a central JSON file. To use your own data:
-
-1.  Navigate to `public/data/skillsData.json`.
-2.  Update the `members` array with your team's information.
-3.  Modify the `skills` array to reflect the specific competencies you want to track.
-
-The application will automatically reflect these changes in the Skill Chart and Gap Analysis dashboards.
-
-### ✨ Visual Data Editor
-
-We provide a built-in visual tool to help you generate the necessary JSON Structure for adding members or skills!
-
-1.  Start the application (`npm run dev`)
-2.  Navigate to the **Update Data** page (e.g., `http://localhost:5173/update`)
-3.  Use the form to add members, skills, and generate the JSON snippet
-4.  Copy the generated JSON into your `public/data/skillsData.json` file
-
 ## 📦 Building for Production
 
 To generate a production-ready build:
@@ -127,9 +108,11 @@ The output will be optimized and placed in the `dist` directory.
 
 This project is licensed under the terms of the [LICENSE](./LICENSE) file.
 
-## 👏 Third Party Licenses
+## 👏 Acknowledgments & Third Party Licenses
 
-This project incorporates code from external libraries. We thank the authors for their work:
+This project is built from the **[RoboSkills](https://github.com/whats2000/RoboSkills)** template. We thank the original author for creating this excellent foundation.
+
+This project also incorporates code from external libraries:
 
 - **[d3-venn](https://github.com/christophe-g/d3-venn)** by Christophe Geiser (BSD 3-Clause License)
 - **[venn.js](https://github.com/benfred/venn.js)** by Ben Frederickson (MIT License)

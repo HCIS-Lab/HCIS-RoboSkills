@@ -27,320 +27,1282 @@
   ],
   "skills": [
     {
-      "id": "task-planning",
-      "name": "Task Planning",
-      "description": "High-level task decomposition and planning",
-      "belongsTo": [
-        "environment"
-      ]
+      "id": "rl-online",
+      "name": "Online RL",
+      "description": "Online reinforcement learning",
+      "belongsTo": ["environment", "robots"]
     },
     {
-      "id": "simulation",
-      "name": "Simulation",
-      "description": "Robot and environment simulation",
-      "belongsTo": [
-        "environment",
-        "robots"
-      ]
+      "id": "rl-offline",
+      "name": "Offline RL",
+      "description": "Offline/batch reinforcement learning",
+      "belongsTo": ["environment"]
     },
     {
-      "id": "env-modeling",
-      "name": "Environment Modeling",
-      "description": "Spatial and semantic environment understanding",
-      "belongsTo": [
-        "environment",
-        "robots"
-      ]
+      "id": "imitation-learning",
+      "name": "Imitation Learning",
+      "description": "Learning from demonstrations",
+      "belongsTo": ["environment", "robots"]
     },
     {
-      "id": "multi-agent",
-      "name": "Multi-Agent Systems",
-      "description": "Coordination and communication between agents",
-      "belongsTo": [
-        "environment",
-        "robots",
-        "caregiver"
-      ]
+      "id": "model-based-rl",
+      "name": "Model-based RL",
+      "description": "Model-based reinforcement learning",
+      "belongsTo": ["environment"]
     },
     {
-      "id": "robot-control",
-      "name": "Robot Control",
-      "description": "Motion control and trajectory planning",
-      "belongsTo": [
-        "robots"
-      ]
+      "id": "computer-vision",
+      "name": "Computer Vision",
+      "description": "Visual perception and understanding",
+      "belongsTo": ["robots", "caregiver", "care-recipient"]
     },
     {
-      "id": "robot-slam",
-      "name": "Robot SLAM",
-      "description": "Simultaneous localization and mapping",
-      "belongsTo": [
-        "robots",
-        "environment"
-      ]
+      "id": "world-models",
+      "name": "World Models",
+      "description": "Predictive models of environment",
+      "belongsTo": ["environment"]
     },
     {
-      "id": "perception",
-      "name": "Perception",
-      "description": "Computer vision and sensor fusion",
-      "belongsTo": [
-        "robots",
-        "caregiver",
-        "care-recipient"
-      ]
+      "id": "foundation-models",
+      "name": "Foundation Models",
+      "description": "Large multimodal foundation models",
+      "belongsTo": ["robots", "environment", "caregiver"]
     },
     {
-      "id": "hardware",
-      "name": "Hardware Integration",
-      "description": "Mechanical and electrical systems",
-      "belongsTo": [
-        "robots"
-      ]
+      "id": "policy-manipulation",
+      "name": "Policy for Manipulation",
+      "description": "Control policies for manipulation tasks",
+      "belongsTo": ["robots", "caregiver"]
     },
     {
-      "id": "manipulation",
-      "name": "Manipulation",
-      "description": "Grasping and object manipulation",
-      "belongsTo": [
-        "robots",
-        "caregiver"
-      ]
+      "id": "policy-locomotion",
+      "name": "Policy for Locomotion",
+      "description": "Control policies for locomotion",
+      "belongsTo": ["robots"]
     },
     {
-      "id": "hri",
-      "name": "Human-Robot Interaction",
-      "description": "Natural interaction with humans",
-      "belongsTo": [
-        "caregiver",
-        "care-recipient"
-      ]
+      "id": "physics-engines",
+      "name": "Physics Engines",
+      "description": "MuJoCo, Isaac, Bullet, PhysX",
+      "belongsTo": ["environment", "robots"]
     },
     {
-      "id": "care-protocols",
-      "name": "Care Protocols",
-      "description": "Standard care procedures and workflows",
-      "belongsTo": [
-        "caregiver",
-        "care-recipient"
-      ]
+      "id": "3d-asset-creation",
+      "name": "3D Asset Creation",
+      "description": "Blender, USD, NeRFs, 3D Gaussian Splatting",
+      "belongsTo": ["environment"]
     },
     {
-      "id": "monitoring",
-      "name": "Health Monitoring",
-      "description": "Vital signs and activity monitoring",
-      "belongsTo": [
-        "caregiver",
-        "care-recipient",
-        "robots"
-      ]
+      "id": "domain-randomization",
+      "name": "Domain Randomization",
+      "description": "Randomization for sim-to-real transfer",
+      "belongsTo": ["environment"]
     },
     {
-      "id": "communication",
-      "name": "Communication",
-      "description": "Speech and gesture recognition",
-      "belongsTo": [
-        "caregiver",
-        "robots"
-      ]
+      "id": "system-identification",
+      "name": "System Identification",
+      "description": "Parameter identification for simulation",
+      "belongsTo": ["robots", "environment"]
     },
     {
-      "id": "user-modeling",
-      "name": "User Modeling",
-      "description": "Understanding user preferences and needs",
-      "belongsTo": [
-        "care-recipient",
-        "caregiver"
-      ]
+      "id": "sim-to-real",
+      "name": "Sim-to-Real Transfer",
+      "description": "Transferring from simulation to reality",
+      "belongsTo": ["environment", "robots"]
     },
     {
-      "id": "needs-assessment",
-      "name": "Needs Assessment",
-      "description": "Evaluating care requirements",
-      "belongsTo": [
-        "care-recipient"
-      ]
+      "id": "real-to-sim",
+      "name": "Real-to-Sim Calibration",
+      "description": "Calibrating simulation from real data",
+      "belongsTo": ["environment", "robots"]
     },
     {
-      "id": "personalization",
-      "name": "Personalization",
-      "description": "Adapting robot behavior to individuals",
-      "belongsTo": [
-        "care-recipient",
-        "environment"
-      ]
+      "id": "synthetic-data",
+      "name": "Synthetic Data Generation",
+      "description": "Generating training data in simulation",
+      "belongsTo": ["environment"]
     },
     {
-      "id": "safety",
+      "id": "sensor-simulation",
+      "name": "Sensor Simulation",
+      "description": "RGB, depth, tactile, force sensors",
+      "belongsTo": ["robots", "environment"]
+    },
+    {
+      "id": "robot-arms",
+      "name": "Robot Arms",
+      "description": "Manipulator hardware and control",
+      "belongsTo": ["robots"]
+    },
+    {
+      "id": "mobile-robots",
+      "name": "Mobile Robots",
+      "description": "Mobile base platforms",
+      "belongsTo": ["robots"]
+    },
+    {
+      "id": "legged-robots",
+      "name": "Legged Robots",
+      "description": "Quadruped and humanoid robots",
+      "belongsTo": ["robots"]
+    },
+    {
+      "id": "sensor-integration",
+      "name": "Sensor Integration",
+      "description": "Integrating various sensors",
+      "belongsTo": ["robots"]
+    },
+    {
+      "id": "teleoperation",
+      "name": "Teleoperation",
+      "description": "VR, SpaceMouse, MoCap systems",
+      "belongsTo": ["robots", "caregiver"]
+    },
+    {
+      "id": "calibration",
+      "name": "Calibration",
+      "description": "Robot and sensor calibration",
+      "belongsTo": ["robots"]
+    },
+    {
+      "id": "low-level-control",
+      "name": "Low-level Control",
+      "description": "Motor control and dynamics",
+      "belongsTo": ["robots"]
+    },
+    {
+      "id": "safety-systems",
       "name": "Safety Systems",
-      "description": "Ensuring user safety and comfort",
-      "belongsTo": [
-        "care-recipient",
-        "robots",
-        "caregiver"
-      ]
+      "description": "Robot safety mechanisms",
+      "belongsTo": ["robots", "caregiver", "care-recipient"]
     },
     {
-      "id": "test-skill",
-      "name": "Test Skill",
-      "description": "A skill for testing PR",
-      "belongsTo": [
-        "environment",
-        "robots",
-        "caregiver",
-        "care-recipient"
-      ]
+      "id": "ros",
+      "name": "ROS/ROS2",
+      "description": "Robot Operating System",
+      "belongsTo": ["robots", "environment"]
+    },
+    {
+      "id": "data-pipelines",
+      "name": "Data Pipelines",
+      "description": "Logging, storage, replay systems",
+      "belongsTo": ["environment"]
+    },
+    {
+      "id": "distributed-training",
+      "name": "Distributed Training",
+      "description": "Large-scale training infrastructure",
+      "belongsTo": ["environment"]
+    },
+    {
+      "id": "cloud-computing",
+      "name": "Cloud Computing",
+      "description": "Cloud and cluster resources",
+      "belongsTo": ["environment"]
+    },
+    {
+      "id": "experiment-management",
+      "name": "Experiment Management",
+      "description": "Tracking and organizing experiments",
+      "belongsTo": ["environment"]
+    },
+    {
+      "id": "reproducibility",
+      "name": "Reproducibility",
+      "description": "Ensuring reproducible research",
+      "belongsTo": ["environment"]
+    },
+    {
+      "id": "benchmark-design",
+      "name": "Benchmark Design",
+      "description": "Designing evaluation benchmarks",
+      "belongsTo": ["environment", "robots"]
+    },
+    {
+      "id": "human-activity-recognition",
+      "name": "Human Activity Recognition (HAR)",
+      "description": "Identifying Activities of Daily Living (ADL)",
+      "belongsTo": ["care-recipient", "environment"]
+    },
+    {
+      "id": "physical-hri",
+      "name": "Physical HRI (pHRI)",
+      "description": "Safe physical contact, compliant control, lift-assist",
+      "belongsTo": ["robots", "caregiver", "care-recipient"]
+    },
+    {
+      "id": "social-navigation",
+      "name": "Social Navigation",
+      "description": "Navigating crowds/homes respecting personal space",
+      "belongsTo": ["robots", "environment", "care-recipient"]
+    },
+    {
+      "id": "affective-computing",
+      "name": "Affective Computing",
+      "description": "Detecting emotion, pain, and stress levels",
+      "belongsTo": ["care-recipient", "caregiver"]
+    },
+    {
+      "id": "human-intent-prediction",
+      "name": "Human Intent Prediction",
+      "description": "Predicting human movement and goals",
+      "belongsTo": ["caregiver", "robots"]
+    },
+    {
+      "id": "vital-monitoring",
+      "name": "Vital Signs Monitoring",
+      "description": "Non-invasive health tracking (rPPG, Thermal)",
+      "belongsTo": ["care-recipient", "robots"]
+    },
+    {
+      "id": "multimodal-hri",
+      "name": "Multimodal HRI",
+      "description": "Voice, gesture, and gaze interaction",
+      "belongsTo": ["caregiver", "care-recipient", "robots"]
+    },
+    {
+      "id": "biomechanics-ergonomics",
+      "name": "Biomechanics & Ergonomics",
+      "description": "Modeling human joint limits and comfort",
+      "belongsTo": ["care-recipient", "caregiver"]
+    },
+    {
+      "id": "trust-explainability",
+      "name": "Trust & Explainability (XAI)",
+      "description": "Ensuring users trust and understand robot actions",
+      "belongsTo": ["caregiver", "care-recipient"]
+    },
+    {
+      "id": "rehab-robotics",
+      "name": "Rehabilitation Robotics",
+      "description": "Exoskeletons and therapeutic exercise assistance",
+      "belongsTo": ["robots", "care-recipient"]
+    },
+    {
+      "id": "privacy-security",
+      "name": "Privacy & Data Security",
+      "description": "HIPAA compliance, edge processing, de-identification",
+      "belongsTo": ["care-recipient", "environment"]
+    },
+    {
+      "id": "assistive-telepresence",
+      "name": "Assistive Telepresence",
+      "description": "Remote care delivery and social connectedness",
+      "belongsTo": ["caregiver", "care-recipient", "robots"]
     }
   ],
   "members": [
     {
-      "id": "member-1",
-      "name": "Alice Chen",
-      "role": "PhD Student",
-      "email": "alice@lab.edu",
-      "github": "alicechen",
+      "id": "member-yiting-chen",
+      "name": "陳奕廷 (Yi-Ting Chen)",
+      "role": "Associate Professor",
+      "affiliation": "NYCU (HCIS Lab)",
+      "email": "",
       "skills": [
         {
-          "skillId": "robot-slam",
+          "skillId": "computer-vision",
           "proficiency": "expert"
         },
         {
-          "skillId": "perception",
+          "skillId": "benchmark-design",
+          "proficiency": "expert"
+        },
+        {
+          "skillId": "imitation-learning",
           "proficiency": "advanced"
         },
         {
-          "skillId": "simulation",
-          "proficiency": "intermediate"
-        },
-        {
-          "skillId": "env-modeling",
+          "skillId": "policy-manipulation",
           "proficiency": "advanced"
         },
         {
-          "skillId": "manipulation",
+          "skillId": "robot-arms",
           "proficiency": "intermediate"
+        },
+        {
+          "skillId": "foundation-models",
+          "proficiency": "intermediate"
+        },
+        {
+          "skillId": "sensor-integration",
+          "proficiency": "intermediate"
+        },
+        {
+          "skillId": "synthetic-data",
+          "proficiency": "beginner"
+        },
+        {
+          "skillId": "sensor-simulation",
+          "proficiency": "beginner"
+        },
+        {
+          "skillId": "data-pipelines",
+          "proficiency": "beginner"
+        },
+        {
+          "skillId": "3d-asset-creation",
+          "proficiency": "beginner"
+        },
+        {
+          "skillId": "physics-engines",
+          "proficiency": "beginner"
+        }
+      ]
+    },
+    {
+      "id": "member-1",
+      "name": "潘翰",
+      "role": "Second Year (and above) Master’s student",
+      "affiliation": "NYCU HCIS Lab",
+      "email": "yeyehank@gmail.com",
+      "skills": [
+        {
+          "skillId": "rl-online",
+          "proficiency": "intermediate"
+        },
+        {
+          "skillId": "rl-offline",
+          "proficiency": "beginner"
+        },
+        {
+          "skillId": "imitation-learning",
+          "proficiency": "intermediate"
+        },
+        {
+          "skillId": "model-based-rl",
+          "proficiency": "beginner"
+        },
+        {
+          "skillId": "computer-vision",
+          "proficiency": "advanced"
+        },
+        {
+          "skillId": "policy-manipulation",
+          "proficiency": "intermediate"
+        },
+        {
+          "skillId": "policy-locomotion",
+          "proficiency": "beginner"
+        },
+        {
+          "skillId": "physics-engines",
+          "proficiency": "advanced"
+        },
+        {
+          "skillId": "3d-asset-creation",
+          "proficiency": "beginner"
+        },
+        {
+          "skillId": "domain-randomization",
+          "proficiency": "beginner"
+        },
+        {
+          "skillId": "sim-to-real",
+          "proficiency": "beginner"
+        },
+        {
+          "skillId": "real-to-sim",
+          "proficiency": "advanced"
+        },
+        {
+          "skillId": "synthetic-data",
+          "proficiency": "intermediate"
+        },
+        {
+          "skillId": "sensor-simulation",
+          "proficiency": "advanced"
+        },
+        {
+          "skillId": "robot-arms",
+          "proficiency": "intermediate"
+        },
+        {
+          "skillId": "mobile-robots",
+          "proficiency": "intermediate"
+        },
+        {
+          "skillId": "sensor-integration",
+          "proficiency": "intermediate"
+        },
+        {
+          "skillId": "teleoperation",
+          "proficiency": "beginner"
+        },
+        {
+          "skillId": "calibration",
+          "proficiency": "advanced"
+        },
+        {
+          "skillId": "low-level-control",
+          "proficiency": "beginner"
+        },
+        {
+          "skillId": "ros",
+          "proficiency": "beginner"
+        },
+        {
+          "skillId": "data-pipelines",
+          "proficiency": "beginner"
         }
       ]
     },
     {
       "id": "member-2",
-      "name": "Bob Wang",
-      "role": "Postdoc",
-      "email": "bob@lab.edu",
-      "github": "bobwang",
+      "name": "陳晉祿",
+      "role": "Undergraduate",
+      "affiliation": "NYCU CS / HCIS lab",
+      "email": "luluboy168.cs11@nycu.edu.tw",
       "skills": [
         {
-          "skillId": "hri",
-          "proficiency": "expert"
+          "skillId": "rl-online",
+          "proficiency": "beginner"
         },
         {
-          "skillId": "communication",
-          "proficiency": "advanced"
+          "skillId": "computer-vision",
+          "proficiency": "beginner"
         },
         {
-          "skillId": "user-modeling",
-          "proficiency": "advanced"
+          "skillId": "3d-asset-creation",
+          "proficiency": "beginner"
         },
         {
-          "skillId": "care-protocols",
-          "proficiency": "intermediate"
+          "skillId": "robot-arms",
+          "proficiency": "beginner"
+        },
+        {
+          "skillId": "mobile-robots",
+          "proficiency": "beginner"
+        },
+        {
+          "skillId": "sensor-integration",
+          "proficiency": "beginner"
+        },
+        {
+          "skillId": "ros",
+          "proficiency": "beginner"
+        },
+        {
+          "skillId": "data-pipelines",
+          "proficiency": "beginner"
         }
       ]
     },
     {
       "id": "member-3",
-      "name": "Carol Liu",
-      "role": "Master Student",
-      "email": "carol@lab.edu",
+      "name": "張家睿",
+      "role": "Undergraduate",
+      "affiliation": "HCIS",
+      "email": "qulip.louis.0126@gmail.com",
       "skills": [
         {
-          "skillId": "robot-control",
-          "proficiency": "intermediate"
-        },
-        {
-          "skillId": "manipulation",
+          "skillId": "imitation-learning",
           "proficiency": "beginner"
         },
         {
-          "skillId": "task-planning",
+          "skillId": "model-based-rl",
+          "proficiency": "beginner"
+        },
+        {
+          "skillId": "computer-vision",
+          "proficiency": "advanced"
+        },
+        {
+          "skillId": "foundation-models",
+          "proficiency": "beginner"
+        },
+        {
+          "skillId": "policy-locomotion",
+          "proficiency": "beginner"
+        },
+        {
+          "skillId": "physics-engines",
+          "proficiency": "beginner"
+        },
+        {
+          "skillId": "3d-asset-creation",
           "proficiency": "intermediate"
         },
         {
-          "skillId": "multi-agent",
+          "skillId": "real-to-sim",
+          "proficiency": "beginner"
+        },
+        {
+          "skillId": "synthetic-data",
+          "proficiency": "beginner"
+        },
+        {
+          "skillId": "sensor-simulation",
+          "proficiency": "beginner"
+        },
+        {
+          "skillId": "robot-arms",
+          "proficiency": "beginner"
+        },
+        {
+          "skillId": "mobile-robots",
+          "proficiency": "beginner"
+        },
+        {
+          "skillId": "sensor-integration",
+          "proficiency": "beginner"
+        },
+        {
+          "skillId": "calibration",
+          "proficiency": "beginner"
+        },
+        {
+          "skillId": "low-level-control",
+          "proficiency": "intermediate"
+        },
+        {
+          "skillId": "ros",
+          "proficiency": "intermediate"
+        },
+        {
+          "skillId": "data-pipelines",
+          "proficiency": "beginner"
+        },
+        {
+          "skillId": "experiment-management",
+          "proficiency": "beginner"
+        },
+        {
+          "skillId": "reproducibility",
           "proficiency": "beginner"
         }
       ]
     },
     {
       "id": "member-4",
-      "name": "David Kim",
-      "role": "PhD Student",
-      "email": "david@lab.edu",
-      "github": "davidkim",
+      "name": "周士傑",
+      "role": "Undergraduate",
+      "affiliation": "National Sun Yat-sen University",
+      "email": "jaychou0819@gmail.com",
       "skills": [
         {
-          "skillId": "multi-agent",
-          "proficiency": "advanced"
-        },
-        {
-          "skillId": "env-modeling",
-          "proficiency": "expert"
-        },
-        {
-          "skillId": "perception",
+          "skillId": "rl-online",
           "proficiency": "intermediate"
         },
         {
-          "skillId": "simulation",
-          "proficiency": "advanced"
+          "skillId": "rl-offline",
+          "proficiency": "intermediate"
+        },
+        {
+          "skillId": "imitation-learning",
+          "proficiency": "beginner"
+        },
+        {
+          "skillId": "computer-vision",
+          "proficiency": "beginner"
+        },
+        {
+          "skillId": "policy-manipulation",
+          "proficiency": "beginner"
+        },
+        {
+          "skillId": "physics-engines",
+          "proficiency": "beginner"
+        },
+        {
+          "skillId": "sensor-simulation",
+          "proficiency": "beginner"
+        },
+        {
+          "skillId": "mobile-robots",
+          "proficiency": "beginner"
+        },
+        {
+          "skillId": "sensor-integration",
+          "proficiency": "beginner"
+        },
+        {
+          "skillId": "low-level-control",
+          "proficiency": "beginner"
+        },
+        {
+          "skillId": "ros",
+          "proficiency": "beginner"
+        },
+        {
+          "skillId": "data-pipelines",
+          "proficiency": "beginner"
+        },
+        {
+          "skillId": "cloud-computing",
+          "proficiency": "beginner"
+        },
+        {
+          "skillId": "experiment-management",
+          "proficiency": "beginner"
+        },
+        {
+          "skillId": "reproducibility",
+          "proficiency": "beginner"
         }
       ]
     },
     {
       "id": "member-5",
-      "name": "Eva Martinez",
+      "name": "鄔仁迪",
       "role": "Research Assistant",
-      "email": "eva@lab.edu",
+      "affiliation": "National Yang Ming Chiao University/EC/Institute of Information Management",
+      "email": "m314706017.mg14@nycu.edu.tw",
+      "github": "whats2000",
       "skills": [
         {
-          "skillId": "needs-assessment",
-          "proficiency": "advanced"
-        },
-        {
-          "skillId": "safety",
-          "proficiency": "intermediate"
-        },
-        {
-          "skillId": "care-protocols",
+          "skillId": "rl-online",
           "proficiency": "beginner"
         },
         {
-          "skillId": "monitoring",
+          "skillId": "rl-offline",
+          "proficiency": "beginner"
+        },
+        {
+          "skillId": "imitation-learning",
           "proficiency": "intermediate"
+        },
+        {
+          "skillId": "model-based-rl",
+          "proficiency": "intermediate"
+        },
+        {
+          "skillId": "computer-vision",
+          "proficiency": "advanced"
+        },
+        {
+          "skillId": "world-models",
+          "proficiency": "beginner"
+        },
+        {
+          "skillId": "foundation-models",
+          "proficiency": "intermediate"
+        },
+        {
+          "skillId": "policy-manipulation",
+          "proficiency": "intermediate"
+        },
+        {
+          "skillId": "physics-engines",
+          "proficiency": "beginner"
+        },
+        {
+          "skillId": "system-identification",
+          "proficiency": "beginner"
+        },
+        {
+          "skillId": "real-to-sim",
+          "proficiency": "beginner"
+        },
+        {
+          "skillId": "synthetic-data",
+          "proficiency": "beginner"
+        },
+        {
+          "skillId": "sensor-simulation",
+          "proficiency": "beginner"
+        },
+        {
+          "skillId": "robot-arms",
+          "proficiency": "beginner"
+        },
+        {
+          "skillId": "sensor-integration",
+          "proficiency": "beginner"
+        },
+        {
+          "skillId": "teleoperation",
+          "proficiency": "beginner"
+        },
+        {
+          "skillId": "calibration",
+          "proficiency": "beginner"
+        },
+        {
+          "skillId": "safety-systems",
+          "proficiency": "beginner"
+        },
+        {
+          "skillId": "data-pipelines",
+          "proficiency": "intermediate"
+        },
+        {
+          "skillId": "distributed-training",
+          "proficiency": "intermediate"
+        },
+        {
+          "skillId": "cloud-computing",
+          "proficiency": "intermediate"
+        },
+        {
+          "skillId": "experiment-management",
+          "proficiency": "beginner"
+        },
+        {
+          "skillId": "reproducibility",
+          "proficiency": "intermediate"
+        },
+        {
+          "skillId": "benchmark-design",
+          "proficiency": "beginner"
         }
       ]
     },
     {
       "id": "member-6",
-      "name": "Frank Lee",
-      "role": "PhD Student",
-      "email": "frank@lab.edu",
-      "github": "franklee",
+      "name": "戴嬿玲",
+      "role": "PhD student",
+      "affiliation": "HCIS Lab",
+      "email": "yling.cs12@nycu.edu.tw",
       "skills": [
         {
-          "skillId": "hardware",
-          "proficiency": "expert"
+          "skillId": "rl-online",
+          "proficiency": "beginner"
         },
         {
-          "skillId": "robot-control",
+          "skillId": "rl-offline",
+          "proficiency": "beginner"
+        },
+        {
+          "skillId": "imitation-learning",
           "proficiency": "advanced"
         },
         {
-          "skillId": "safety",
+          "skillId": "model-based-rl",
+          "proficiency": "beginner"
+        },
+        {
+          "skillId": "computer-vision",
           "proficiency": "advanced"
         },
         {
-          "skillId": "manipulation",
+          "skillId": "world-models",
+          "proficiency": "beginner"
+        },
+        {
+          "skillId": "foundation-models",
           "proficiency": "intermediate"
+        },
+        {
+          "skillId": "policy-manipulation",
+          "proficiency": "advanced"
+        },
+        {
+          "skillId": "policy-locomotion",
+          "proficiency": "beginner"
+        },
+        {
+          "skillId": "physics-engines",
+          "proficiency": "intermediate"
+        },
+        {
+          "skillId": "3d-asset-creation",
+          "proficiency": "intermediate"
+        },
+        {
+          "skillId": "domain-randomization",
+          "proficiency": "intermediate"
+        },
+        {
+          "skillId": "system-identification",
+          "proficiency": "beginner"
+        },
+        {
+          "skillId": "sim-to-real",
+          "proficiency": "intermediate"
+        },
+        {
+          "skillId": "real-to-sim",
+          "proficiency": "advanced"
+        },
+        {
+          "skillId": "synthetic-data",
+          "proficiency": "intermediate"
+        },
+        {
+          "skillId": "sensor-simulation",
+          "proficiency": "intermediate"
+        },
+        {
+          "skillId": "robot-arms",
+          "proficiency": "advanced"
+        },
+        {
+          "skillId": "sensor-integration",
+          "proficiency": "intermediate"
+        },
+        {
+          "skillId": "teleoperation",
+          "proficiency": "intermediate"
+        },
+        {
+          "skillId": "calibration",
+          "proficiency": "intermediate"
+        },
+        {
+          "skillId": "low-level-control",
+          "proficiency": "intermediate"
+        },
+        {
+          "skillId": "safety-systems",
+          "proficiency": "intermediate"
+        },
+        {
+          "skillId": "ros",
+          "proficiency": "intermediate"
+        },
+        {
+          "skillId": "data-pipelines",
+          "proficiency": "intermediate"
+        },
+        {
+          "skillId": "distributed-training",
+          "proficiency": "intermediate"
+        },
+        {
+          "skillId": "experiment-management",
+          "proficiency": "advanced"
+        },
+        {
+          "skillId": "reproducibility",
+          "proficiency": "intermediate"
+        },
+        {
+          "skillId": "benchmark-design",
+          "proficiency": "intermediate"
+        }
+      ]
+    },
+    {
+      "id": "member-7",
+      "name": "林翔恩",
+      "role": "Undergraduate",
+      "affiliation": "清華大學",
+      "email": "linxiangen014@gmail.com",
+      "skills": [
+        {
+          "skillId": "rl-online",
+          "proficiency": "beginner"
+        },
+        {
+          "skillId": "computer-vision",
+          "proficiency": "intermediate"
+        },
+        {
+          "skillId": "cloud-computing",
+          "proficiency": "beginner"
+        },
+        {
+          "skillId": "benchmark-design",
+          "proficiency": "beginner"
+        }
+      ]
+    },
+    {
+      "id": "member-8",
+      "name": "蔡茗鈞",
+      "role": "First Year Master’s student",
+      "affiliation": "Hcis lab",
+      "email": "tsaimingchun911130@gmail.com",
+      "skills": [
+        {
+          "skillId": "rl-online",
+          "proficiency": "intermediate"
+        },
+        {
+          "skillId": "model-based-rl",
+          "proficiency": "intermediate"
+        },
+        {
+          "skillId": "computer-vision",
+          "proficiency": "beginner"
+        },
+        {
+          "skillId": "physics-engines",
+          "proficiency": "intermediate"
+        },
+        {
+          "skillId": "system-identification",
+          "proficiency": "beginner"
+        },
+        {
+          "skillId": "sensor-simulation",
+          "proficiency": "beginner"
+        },
+        {
+          "skillId": "robot-arms",
+          "proficiency": "beginner"
+        },
+        {
+          "skillId": "mobile-robots",
+          "proficiency": "advanced"
+        },
+        {
+          "skillId": "sensor-integration",
+          "proficiency": "beginner"
+        },
+        {
+          "skillId": "calibration",
+          "proficiency": "beginner"
+        },
+        {
+          "skillId": "low-level-control",
+          "proficiency": "beginner"
+        },
+        {
+          "skillId": "safety-systems",
+          "proficiency": "beginner"
+        },
+        {
+          "skillId": "ros",
+          "proficiency": "intermediate"
+        },
+        {
+          "skillId": "data-pipelines",
+          "proficiency": "intermediate"
+        },
+        {
+          "skillId": "cloud-computing",
+          "proficiency": "intermediate"
+        },
+        {
+          "skillId": "experiment-management",
+          "proficiency": "beginner"
+        }
+      ]
+    },
+    {
+      "id": "member-9",
+      "name": "王俊權",
+      "role": "First Year Master’s student",
+      "affiliation": "EECS",
+      "email": "author31.ee13@nycu.edu.tw",
+      "skills": [
+        {
+          "skillId": "rl-online",
+          "proficiency": "beginner"
+        },
+        {
+          "skillId": "rl-offline",
+          "proficiency": "beginner"
+        },
+        {
+          "skillId": "imitation-learning",
+          "proficiency": "intermediate"
+        },
+        {
+          "skillId": "model-based-rl",
+          "proficiency": "beginner"
+        },
+        {
+          "skillId": "computer-vision",
+          "proficiency": "intermediate"
+        },
+        {
+          "skillId": "world-models",
+          "proficiency": "intermediate"
+        },
+        {
+          "skillId": "foundation-models",
+          "proficiency": "beginner"
+        },
+        {
+          "skillId": "policy-manipulation",
+          "proficiency": "intermediate"
+        },
+        {
+          "skillId": "policy-locomotion",
+          "proficiency": "intermediate"
+        },
+        {
+          "skillId": "physics-engines",
+          "proficiency": "intermediate"
+        },
+        {
+          "skillId": "3d-asset-creation",
+          "proficiency": "intermediate"
+        },
+        {
+          "skillId": "domain-randomization",
+          "proficiency": "intermediate"
+        },
+        {
+          "skillId": "system-identification",
+          "proficiency": "intermediate"
+        },
+        {
+          "skillId": "sim-to-real",
+          "proficiency": "intermediate"
+        },
+        {
+          "skillId": "real-to-sim",
+          "proficiency": "intermediate"
+        },
+        {
+          "skillId": "synthetic-data",
+          "proficiency": "intermediate"
+        },
+        {
+          "skillId": "sensor-simulation",
+          "proficiency": "intermediate"
+        },
+        {
+          "skillId": "robot-arms",
+          "proficiency": "intermediate"
+        },
+        {
+          "skillId": "mobile-robots",
+          "proficiency": "beginner"
+        },
+        {
+          "skillId": "legged-robots",
+          "proficiency": "intermediate"
+        },
+        {
+          "skillId": "sensor-integration",
+          "proficiency": "intermediate"
+        },
+        {
+          "skillId": "teleoperation",
+          "proficiency": "beginner"
+        },
+        {
+          "skillId": "calibration",
+          "proficiency": "beginner"
+        },
+        {
+          "skillId": "low-level-control",
+          "proficiency": "beginner"
+        },
+        {
+          "skillId": "safety-systems",
+          "proficiency": "beginner"
+        },
+        {
+          "skillId": "ros",
+          "proficiency": "intermediate"
+        },
+        {
+          "skillId": "data-pipelines",
+          "proficiency": "intermediate"
+        },
+        {
+          "skillId": "distributed-training",
+          "proficiency": "beginner"
+        },
+        {
+          "skillId": "cloud-computing",
+          "proficiency": "intermediate"
+        },
+        {
+          "skillId": "experiment-management",
+          "proficiency": "intermediate"
+        },
+        {
+          "skillId": "reproducibility",
+          "proficiency": "intermediate"
+        },
+        {
+          "skillId": "benchmark-design",
+          "proficiency": "beginner"
+        }
+      ]
+    },
+    {
+      "id": "member-10",
+      "name": "Enfu",
+      "role": "Research engineer",
+      "affiliation": "HCIS",
+      "email": "enfu.liao.cs14@nycu.edu.tw",
+      "skills": [
+        {
+          "skillId": "3d-asset-creation",
+          "proficiency": "intermediate"
+        },
+        {
+          "skillId": "mobile-robots",
+          "proficiency": "beginner"
+        },
+        {
+          "skillId": "ros",
+          "proficiency": "intermediate"
+        },
+        {
+          "skillId": "data-pipelines",
+          "proficiency": "intermediate"
+        },
+        {
+          "skillId": "cloud-computing",
+          "proficiency": "advanced"
+        }
+      ]
+    },
+    {
+      "id": "member-11",
+      "name": "林谷翰",
+      "role": "Research Assistant",
+      "affiliation": "HCIS lab",
+      "email": "lin45881105.iem07@nctu.edu.tw",
+      "skills": [
+        {
+          "skillId": "imitation-learning",
+          "proficiency": "beginner"
+        },
+        {
+          "skillId": "computer-vision",
+          "proficiency": "beginner"
+        },
+        {
+          "skillId": "foundation-models",
+          "proficiency": "beginner"
+        },
+        {
+          "skillId": "policy-manipulation",
+          "proficiency": "beginner"
+        },
+        {
+          "skillId": "policy-locomotion",
+          "proficiency": "beginner"
+        },
+        {
+          "skillId": "physics-engines",
+          "proficiency": "beginner"
+        },
+        {
+          "skillId": "3d-asset-creation",
+          "proficiency": "beginner"
+        },
+        {
+          "skillId": "robot-arms",
+          "proficiency": "beginner"
+        },
+        {
+          "skillId": "sensor-integration",
+          "proficiency": "beginner"
+        },
+        {
+          "skillId": "calibration",
+          "proficiency": "beginner"
+        },
+        {
+          "skillId": "low-level-control",
+          "proficiency": "beginner"
+        },
+        {
+          "skillId": "ros",
+          "proficiency": "beginner"
+        },
+        {
+          "skillId": "data-pipelines",
+          "proficiency": "beginner"
+        },
+        {
+          "skillId": "experiment-management",
+          "proficiency": "beginner"
+        }
+      ]
+    },
+    {
+      "id": "member-12",
+      "name": "黃毓翔",
+      "role": "PhD student",
+      "affiliation": "NTHU CS",
+      "email": "cecilhyh@gmail.com",
+      "skills": [
+        {
+          "skillId": "rl-online",
+          "proficiency": "advanced"
+        },
+        {
+          "skillId": "rl-offline",
+          "proficiency": "intermediate"
+        },
+        {
+          "skillId": "imitation-learning",
+          "proficiency": "intermediate"
+        },
+        {
+          "skillId": "model-based-rl",
+          "proficiency": "intermediate"
+        },
+        {
+          "skillId": "computer-vision",
+          "proficiency": "intermediate"
+        },
+        {
+          "skillId": "world-models",
+          "proficiency": "beginner"
+        },
+        {
+          "skillId": "foundation-models",
+          "proficiency": "intermediate"
+        },
+        {
+          "skillId": "policy-manipulation",
+          "proficiency": "intermediate"
+        },
+        {
+          "skillId": "physics-engines",
+          "proficiency": "beginner"
+        },
+        {
+          "skillId": "domain-randomization",
+          "proficiency": "beginner"
+        },
+        {
+          "skillId": "sim-to-real",
+          "proficiency": "beginner"
+        },
+        {
+          "skillId": "real-to-sim",
+          "proficiency": "intermediate"
+        },
+        {
+          "skillId": "synthetic-data",
+          "proficiency": "beginner"
+        },
+        {
+          "skillId": "sensor-simulation",
+          "proficiency": "beginner"
+        },
+        {
+          "skillId": "robot-arms",
+          "proficiency": "intermediate"
+        },
+        {
+          "skillId": "sensor-integration",
+          "proficiency": "beginner"
+        },
+        {
+          "skillId": "teleoperation",
+          "proficiency": "beginner"
+        },
+        {
+          "skillId": "calibration",
+          "proficiency": "beginner"
+        },
+        {
+          "skillId": "low-level-control",
+          "proficiency": "beginner"
+        },
+        {
+          "skillId": "ros",
+          "proficiency": "beginner"
+        },
+        {
+          "skillId": "data-pipelines",
+          "proficiency": "beginner"
+        },
+        {
+          "skillId": "cloud-computing",
+          "proficiency": "beginner"
+        },
+        {
+          "skillId": "experiment-management",
+          "proficiency": "beginner"
+        },
+        {
+          "skillId": "benchmark-design",
+          "proficiency": "beginner"
         }
       ]
     }
