@@ -356,7 +356,7 @@ const GapDistributionChart: React.FC<GapDistributionChartProps> = ({
     const container = barRef.current.parentElement;
     const containerWidth = container?.clientWidth || 600;
 
-    const margin = { top: 20, right: 20, bottom: 100, left: 45 };
+    const margin = { top: 20, right: 20, bottom: 110, left: 45 };
     const width = Math.max(
       containerWidth,
       skillsData.length * 45 + margin.left + margin.right,
