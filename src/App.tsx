@@ -13,7 +13,9 @@ import {
   PullRequestOutlined,
   MenuOutlined,
   GithubOutlined,
+  HomeOutlined,
 } from '@ant-design/icons';
+import HomePage from './pages/HomePage';
 import OverviewPage from './pages/OverviewPage';
 import GapAnalysisPage from './pages/GapAnalysisPage';
 import PRGeneratorPage from './pages/PRGeneratorPage';
@@ -29,8 +31,13 @@ const Navigation: React.FC<{
   const menuItems = [
     {
       key: '/',
+      icon: <HomeOutlined />,
+      label: <Link to='/'>Home</Link>,
+    },
+    {
+      key: '/overview',
       icon: <TeamOutlined />,
-      label: <Link to='/'>Overview</Link>,
+      label: <Link to='/overview'>Overview</Link>,
     },
     {
       key: '/gaps',
@@ -177,7 +184,8 @@ const AppContent: React.FC = () => {
         >
           <div className='max-w-7xl mx-auto'>
             <Routes>
-              <Route path='/' element={<OverviewPage />} />
+              <Route path='/' element={<HomePage />} />
+              <Route path='/overview' element={<OverviewPage />} />
               <Route path='/gaps' element={<GapAnalysisPage />} />
               <Route path='/update' element={<PRGeneratorPage />} />
             </Routes>
