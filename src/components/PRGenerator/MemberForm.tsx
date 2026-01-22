@@ -8,6 +8,7 @@ import {
   Divider,
   Tag,
   Select,
+  Tooltip,
 } from 'antd';
 import { GithubOutlined, DeleteOutlined } from '@ant-design/icons';
 import type {
@@ -149,33 +150,35 @@ export const MemberForm: React.FC<MemberFormProps> = ({
 
                   return (
                     <div key={skill.id} className='flex items-center gap-1'>
-                      <Tag
-                        className={`cursor-pointer transition-all border ${
-                          isSelected
-                            ? 'text-white'
-                            : 'bg-white/5 text-gray-400 border-gray-700 hover:text-gray-300 hover:border-gray-600'
-                        }`}
-                        style={
-                          isSelected
-                            ? {
-                                backgroundColor: category.color,
-                                borderColor: category.color,
-                              }
-                            : undefined
-                        }
-                        onClick={() => {
-                          if (isSelected) {
-                            removeSkill(skill.id);
-                          } else {
-                            addSkill(skill.id, 'intermediate');
+                      <Tooltip title={skill.description} placement='top'>
+                        <Tag
+                          className={`cursor-pointer transition-all border ${
+                            isSelected
+                              ? 'text-white'
+                              : 'bg-white/5 text-gray-400 border-gray-700 hover:text-gray-300 hover:border-gray-600'
+                          }`}
+                          style={
+                            isSelected
+                              ? {
+                                  backgroundColor: category.color,
+                                  borderColor: category.color,
+                                }
+                              : undefined
                           }
-                        }}
-                      >
-                        {skill.name}
-                        {isOverlap && !isSelected && (
-                          <span className='ml-1'>⟷</span>
-                        )}
-                      </Tag>
+                          onClick={() => {
+                            if (isSelected) {
+                              removeSkill(skill.id);
+                            } else {
+                              addSkill(skill.id, 'intermediate');
+                            }
+                          }}
+                        >
+                          {skill.name}
+                          {isOverlap && !isSelected && (
+                            <span className='ml-1'>⟷</span>
+                          )}
+                        </Tag>
+                      </Tooltip>
                       {isSelected && (
                         <Select
                           size='small'
