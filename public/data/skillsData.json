@@ -416,7 +416,7 @@
   "members": [
     {
       "id": "member-yiting-chen",
-      "name": "陳奕廷 (Yi-Ting Chen)",
+      "name": "é³å¥å»· (Yi-Ting Chen)",
       "role": "Associate Professor",
       "affiliation": "NYCU (HCIS Lab)",
       "email": "",
@@ -473,8 +473,8 @@
     },
     {
       "id": "member-1",
-      "name": "潘翰",
-      "role": "Second Year (and above) Master’s student",
+      "name": "æ½ç¿°",
+      "role": "Second Year (and above) Masterâs student",
       "affiliation": "NYCU HCIS Lab",
       "email": "yeyehank@gmail.com",
       "skills": [
@@ -570,7 +570,7 @@
     },
     {
       "id": "member-2",
-      "name": "陳晉祿",
+      "name": "é³æç¥¿",
       "role": "Undergraduate",
       "affiliation": "NYCU CS / HCIS lab",
       "email": "luluboy168.cs11@nycu.edu.tw",
@@ -611,7 +611,7 @@
     },
     {
       "id": "member-3",
-      "name": "張家睿",
+      "name": "å¼µå®¶ç¿",
       "role": "Undergraduate",
       "affiliation": "HCIS",
       "email": "qulip.louis.0126@gmail.com",
@@ -696,7 +696,7 @@
     },
     {
       "id": "member-4",
-      "name": "周士傑",
+      "name": "å¨å£«å",
       "role": "Undergraduate",
       "affiliation": "National Sun Yat-sen University",
       "email": "jaychou0819@gmail.com",
@@ -765,7 +765,7 @@
     },
     {
       "id": "member-5",
-      "name": "鄔仁迪",
+      "name": "éä»è¿ª",
       "role": "Research Assistant",
       "affiliation": "National Yang Ming Chiao University/EC/Institute of Information Management",
       "email": "m314706017.mg14@nycu.edu.tw",
@@ -871,7 +871,7 @@
     },
     {
       "id": "member-6",
-      "name": "戴嬿玲",
+      "name": "æ´å¬¿ç²",
       "role": "PhD student",
       "affiliation": "HCIS Lab",
       "email": "yling.cs12@nycu.edu.tw",
@@ -996,9 +996,9 @@
     },
     {
       "id": "member-7",
-      "name": "林翔恩",
+      "name": "æç¿æ©",
       "role": "Undergraduate",
-      "affiliation": "清華大學",
+      "affiliation": "æ¸è¯å¤§å­¸",
       "email": "linxiangen014@gmail.com",
       "skills": [
         {
@@ -1021,8 +1021,8 @@
     },
     {
       "id": "member-8",
-      "name": "蔡茗鈞",
-      "role": "First Year Master’s student",
+      "name": "è¡èé",
+      "role": "First Year Masterâs student",
       "affiliation": "Hcis lab",
       "email": "tsaimingchun911130@gmail.com",
       "skills": [
@@ -1176,10 +1176,6 @@
           "proficiency": "beginner"
         },
         {
-          "skillId": "legged-robots",
-          "proficiency": "intermediate"
-        },
-        {
           "skillId": "sensor-integration",
           "proficiency": "intermediate"
         },
@@ -1260,7 +1256,7 @@
     },
     {
       "id": "member-11",
-      "name": "林谷翰",
+      "name": "æè°·ç¿°",
       "role": "Research Assistant",
       "affiliation": "HCIS lab",
       "email": "lin45881105.iem07@nctu.edu.tw",
@@ -1325,7 +1321,7 @@
     },
     {
       "id": "member-12",
-      "name": "黃毓翔",
+      "name": "é»æ¯ç¿",
       "role": "PhD student",
       "affiliation": "NTHU CS",
       "email": "cecilhyh@gmail.com",
