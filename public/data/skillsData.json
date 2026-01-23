@@ -1176,10 +1176,6 @@
           "proficiency": "beginner"
         },
         {
-          "skillId": "legged-robots",
-          "proficiency": "intermediate"
-        },
-        {
           "skillId": "sensor-integration",
           "proficiency": "intermediate"
         },
