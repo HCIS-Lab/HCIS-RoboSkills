@@ -63,6 +63,12 @@ const Navigation: React.FC<{
           background: 'rgba(15, 15, 35, 0.8)',
           backdropFilter: 'blur(12px)',
           borderRight: '1px solid rgba(255, 255, 255, 0.1)',
+          overflow: 'auto',
+          height: '100vh',
+          position: 'sticky',
+          top: 0,
+          left: 0,
+          zIndex: 10,
         }}
         trigger={null}
       >
