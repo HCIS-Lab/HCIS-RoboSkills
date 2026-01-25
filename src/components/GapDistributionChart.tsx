@@ -472,6 +472,9 @@ const GapDistributionChart: React.FC<GapDistributionChartProps> = ({
 
     stackedData.forEach(({ skill, bars }) => {
       const isSelected = selectedSkill === skill.id;
+      // If a skill is selected, others should be dimmed
+      const baseOpacity = selectedSkill ? (isSelected ? 1 : 0.3) : 1;
+
       bars.forEach((bar) => {
         const rect = g
           .append('rect')
@@ -480,11 +483,9 @@ const GapDistributionChart: React.FC<GapDistributionChartProps> = ({
           .attr('width', xScale.bandwidth())
           .attr('height', Math.max(0, yScale(bar.y0) - yScale(bar.y1)))
           .attr('fill', PROFICIENCY_COLORS[bar.level])
-          .attr('stroke', isSelected ? '#fff' : 'none')
-          .attr('stroke-width', 2)
-          .attr('opacity', 1)
+          .attr('opacity', baseOpacity)
           .style('cursor', 'pointer')
-          .style('transition', 'opacity 0.2s ease, filter 0.2s ease')
+          .style('transition', 'opacity 0.3s ease')
           .attr('data-skill-id', skill.id)
           .attr('data-level', bar.level);
 
@@ -497,16 +498,21 @@ const GapDistributionChart: React.FC<GapDistributionChartProps> = ({
               const rSkillId = r.attr('data-skill-id');
               const rLevel = r.attr('data-level');
               if (rSkillId !== skill.id || rLevel !== bar.level) {
-                r.attr('opacity', 0.3);
+                r.attr('opacity', 0.1);
               }
             });
-            // Brighten this bar
-            d3.select(this).style('filter', 'brightness(1.2)');
+            // Ensure this bar is fully visible
+            d3.select(this).attr('opacity', 1);
           })
           .on('mouseleave', function () {
-            // Reset all bars
-            allRects.forEach((r) => r.attr('opacity', 1));
-            d3.select(this).style('filter', 'none');
+            // Restore base opacity state depending on selection
+            allRects.forEach((r) => {
+              const rSkillId = r.attr('data-skill-id');
+              const isActive = selectedSkill
+                ? rSkillId === selectedSkill
+                : true;
+              r.attr('opacity', isActive ? 1 : 0.3);
+            });
           })
           .on('click', function () {
             setSelectedSkill(skill.id);
@@ -538,7 +544,38 @@ const GapDistributionChart: React.FC<GapDistributionChartProps> = ({
       .attr('dx', '-0.5em')
       .attr('dy', '0.3em')
       .style('cursor', 'pointer')
+      .style('transition', 'fill 0.2s ease')
       .text((d) => skillsData.find((s) => s.id === d)?.name || '')
+      .on('mouseenter', function (event, d) {
+        const skillId = d as string;
+        // Highlight this text
+        d3.select(this).attr('fill', '#fff').attr('font-weight', '700');
+
+        // Update bars to highlight this skill
+        allRects.forEach((r) => {
+          const rSkillId = r.attr('data-skill-id');
+          if (rSkillId === skillId) {
+            r.attr('opacity', 1);
+          } else {
+            r.attr('opacity', 0.1);
+          }
+        });
+      })
+      .on('mouseleave', function (event, d) {
+        const skillId = d as string;
+        // Reset text style based on selection
+        const isSelected = selectedSkill === skillId;
+        d3.select(this)
+          .attr('fill', isSelected ? '#fff' : 'rgba(255,255,255,0.7)')
+          .attr('font-weight', isSelected ? '700' : '400');
+
+        // Restore bar opacities based on selection state
+        allRects.forEach((r) => {
+          const rSkillId = r.attr('data-skill-id');
+          const isActive = selectedSkill ? rSkillId === selectedSkill : true;
+          r.attr('opacity', isActive ? 1 : 0.3);
+        });
+      })
       .on('click', (_, d) => setSelectedSkill(d as string));
 
     const yAxis = g.append('g').call(d3.axisLeft(yScale).ticks(5));
