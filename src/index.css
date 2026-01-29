@@ -37,6 +37,8 @@ body {
     var(--color-bg-primary) 0%,
     var(--color-bg-secondary) 100%
   );
+  background-attachment: fixed;
+  background-repeat: no-repeat;
   color: var(--color-text-primary);
   min-height: 100vh;
 }
