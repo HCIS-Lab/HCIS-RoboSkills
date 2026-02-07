@@ -21,6 +21,40 @@ const COMMON_ROLES = [
   'Alumni',
 ];
 
+// Unicode-safe base64 encoding for GitHub API
+// GitHub's API expects base64-encoded content
+const encodeBase64 = (str: string): string => {
+  // Convert to UTF-8 byte array
+  const encoder = new TextEncoder();
+  const utf8Array = encoder.encode(str);
+
+  // Convert byte array to binary string, handling each byte properly
+  let binary = '';
+  const len = utf8Array.byteLength;
+  for (let i = 0; i < len; i++) {
+    binary += String.fromCharCode(utf8Array[i]);
+  }
+
+  // Encode to base64
+  return btoa(binary);
+};
+
+// Unicode-safe base64 decoding
+const decodeBase64 = (base64: string): string => {
+  // Decode from base64 to binary string
+  const binary = atob(base64);
+
+  // Convert binary string to UTF-8 byte array
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) {
+    bytes[i] = binary.charCodeAt(i);
+  }
+
+  // Decode UTF-8 bytes to string
+  const decoder = new TextDecoder();
+  return decoder.decode(bytes);
+};
+
 interface MemberFormData {
   name: string;
   role: string;
@@ -149,7 +183,9 @@ export const PRGeneratorPage: React.FC = () => {
       );
 
       if (!Array.isArray(fileData) && fileData.type === 'file') {
-        const decodedContent = atob(fileData.content.replace(/\n/g, ''));
+        const decodedContent = decodeBase64(
+          fileData.content.replace(/\n/g, ''),
+        );
         const currentContent = JSON.parse(decodedContent);
 
         // Update content locally
@@ -242,7 +278,7 @@ export const PRGeneratorPage: React.FC = () => {
               return `batch update: ${batchChanges.length} changes`;
             return `update data for ${form.getFieldValue('name')}`;
           })()}`,
-          content: btoa(JSON.stringify(updatedContent, null, 2)),
+          content: encodeBase64(JSON.stringify(updatedContent, null, 2)),
           branch: BRANCH_NAME,
           sha: branchFileData.sha,
         });
