@@ -1,15 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import {
-  Card,
-  Row,
-  Col,
-  Button,
-  Typography,
-  Statistic,
-  Space,
-  Spin,
-} from 'antd';
+import { Card, Row, Col, Typography, Statistic, Space, Spin } from 'antd';
 import {
   TeamOutlined,
   SearchOutlined,
@@ -17,7 +8,11 @@ import {
   GithubOutlined,
   GlobalOutlined,
   RocketOutlined,
+  CarOutlined,
+  RobotOutlined,
+  RightOutlined,
 } from '@ant-design/icons';
+import ResearchVisionChart from '../components/ResearchVisionChart';
 
 const { Title, Paragraph, Text } = Typography;
 
@@ -70,6 +65,24 @@ interface SkillsData {
   }>;
 }
 
+interface ResearchArea {
+  id: string;
+  name: string;
+  description: string;
+  color: string;
+  icon: string;
+  url: string;
+}
+
+interface ResearchData {
+  lab: {
+    name: string;
+    fullName: string;
+    philosophy: string;
+  };
+  researchAreas: ResearchArea[];
+}
+
 const iconMap: Record<string, React.ReactNode> = {
   TeamOutlined: <TeamOutlined />,
   SearchOutlined: <SearchOutlined />,
@@ -79,6 +92,7 @@ const iconMap: Record<string, React.ReactNode> = {
 
 const HomePage: React.FC = () => {
   const [config, setConfig] = useState<HomeConfig | null>(null);
+  const [researchData, setResearchData] = useState<ResearchData | null>(null);
   const [stats, setStats] = useState<{
     members: number;
     skills: number;
@@ -89,15 +103,18 @@ const HomePage: React.FC = () => {
   useEffect(() => {
     const loadData = async () => {
       try {
-        const [configRes, skillsRes] = await Promise.all([
+        const [configRes, skillsRes, researchRes] = await Promise.all([
           fetch(`${import.meta.env.BASE_URL}data/homeConfig.json`),
           fetch(`${import.meta.env.BASE_URL}data/skillsData.json`),
+          fetch(`${import.meta.env.BASE_URL}data/researchData.json`),
         ]);
 
         const configData = await configRes.json();
         const skillsData: SkillsData = await skillsRes.json();
+        const researchDataJson = await researchRes.json();
 
         setConfig(configData);
+        setResearchData(researchDataJson);
         setStats({
           members: skillsData.members.length,
           skills: skillsData.skills.length,
@@ -112,6 +129,17 @@ const HomePage: React.FC = () => {
 
     loadData();
   }, []);
+
+  const getAreaIcon = (icon: string) => {
+    switch (icon) {
+      case 'car':
+        return <CarOutlined />;
+      case 'robot':
+        return <RobotOutlined />;
+      default:
+        return <GlobalOutlined />;
+    }
+  };
 
   if (loading) {
     return (
@@ -131,25 +159,25 @@ const HomePage: React.FC = () => {
 
   return (
     <div className='min-h-screen'>
-      {/* Hero Section */}
-      <div className='relative overflow-hidden bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900'>
+      {/* Top Section: Logo + Research Vision */}
+      <div className='relative overflow-hidden'>
         <div className='absolute inset-0'>
           <div className='orb orb-1' style={{ top: '10%', left: '10%' }} />
           <div className='orb orb-2' style={{ top: '60%', right: '15%' }} />
         </div>
-        <div className='container mx-auto px-4 py-20 md:py-32 relative z-10'>
-          <div className='text-center max-w-4xl mx-auto'>
-            {/* HCIS Lab Logo */}
-            <div className='flex justify-center mb-8'>
+        <div className='container mx-auto px-4 pt-12 pb-8 relative z-10'>
+          {/* HCIS Lab Logo + Title */}
+          <div className='text-center mb-8'>
+            <div className='flex justify-center mb-4'>
               <img
                 src={`${import.meta.env.BASE_URL}hcis-lab-logo-dark.svg`}
                 alt='HCIS Lab Logo'
-                className='h-32 md:h-40 w-auto drop-shadow-2xl animate-fade-in'
+                className='h-20 md:h-28 w-auto drop-shadow-2xl animate-fade-in'
               />
             </div>
             <Title
               level={1}
-              className='!text-5xl md:!text-7xl !mb-6 !font-bold'
+              className='!text-4xl md:!text-5xl !mb-3 !font-bold'
               style={{
                 background: 'linear-gradient(to right, #818cf8, #c084fc)',
                 WebkitBackgroundClip: 'text',
@@ -159,93 +187,19 @@ const HomePage: React.FC = () => {
             >
               {config.hero.title}
             </Title>
-            <Title level={3} className='!text-white/90 !mb-4 !font-normal'>
+            <Paragraph className='!text-white/70 !text-lg !mb-0'>
               {config.hero.subtitle}
-            </Title>
-            <Paragraph className='!text-white/70 !text-lg !mb-8'>
-              {config.hero.description}
             </Paragraph>
-            <Space size='large' wrap>
-              <Link to='/overview'>
-                <Button
-                  type='primary'
-                  size='large'
-                  icon={<RocketOutlined />}
-                  className='shadow-lg hover:shadow-xl'
-                >
-                  Get Started
-                </Button>
-              </Link>
-              {config.lab.website && (
-                <a
-                  href={config.lab.website}
-                  target='_blank'
-                  rel='noopener noreferrer'
-                >
-                  <Button
-                    size='large'
-                    icon={<GlobalOutlined />}
-                    ghost
-                    className='!text-white !border-white/50 hover:!bg-white/10 hover:!border-white'
-                  >
-                    Visit Lab Website
-                  </Button>
-                </a>
-              )}
-            </Space>
           </div>
+
+          {/* Research Vision Chart */}
+          {researchData && (
+            <div className='mb-8'>
+              <ResearchVisionChart />
+            </div>
+          )}
         </div>
       </div>
-
-      {/* Statistics Section */}
-      {config.statistics.showStats && stats && (
-        <div className='container mx-auto px-4 py-12 bg-transparent'>
-          <Card
-            className='backdrop-blur-md border-white/10 shadow-2xl'
-            style={{
-              background: 'rgba(255, 255, 255, 0.03)',
-              borderRadius: '16px',
-            }}
-          >
-            <Row gutter={[24, 24]} justify='center'>
-              <Col xs={24} sm={8} md={8}>
-                <Statistic
-                  title={<span className='text-white/70'>Team Members</span>}
-                  value={stats.members}
-                  valueStyle={{ color: '#818cf8', fontSize: '2.5rem' }}
-                  prefix={<TeamOutlined />}
-                />
-              </Col>
-              <Col xs={24} sm={8} md={8}>
-                <Statistic
-                  title={<span className='text-white/70'>Skills Tracked</span>}
-                  value={stats.skills}
-                  valueStyle={{ color: '#c084fc', fontSize: '2.5rem' }}
-                  prefix={<RocketOutlined />}
-                />
-              </Col>
-              <Col xs={24} sm={8} md={8}>
-                <Statistic
-                  title={<span className='text-white/70'>Categories</span>}
-                  value={stats.categories}
-                  valueStyle={{ color: '#a78bfa', fontSize: '2.5rem' }}
-                  prefix={<SearchOutlined />}
-                />
-              </Col>
-              {config.statistics.customStats.map((stat, index) => (
-                <Col xs={24} sm={8} md={8} key={index}>
-                  <Statistic
-                    title={<span className='text-white/70'>{stat.title}</span>}
-                    value={stat.value}
-                    suffix={stat.suffix}
-                    valueStyle={{ color: '#818cf8', fontSize: '2.5rem' }}
-                  />
-                </Col>
-              ))}
-            </Row>
-          </Card>
-        </div>
-      )}
 
       {/* About Lab Section */}
       <div className='container mx-auto px-4 py-12 bg-transparent'>
@@ -290,38 +244,111 @@ const HomePage: React.FC = () => {
         </Card>
       </div>
 
-      {/* Features Section */}
-      <div className='container mx-auto px-4 py-12 bg-transparent'>
-        <Title level={2} className='!text-white text-center !mb-8'>
-          Key Features
-        </Title>
-        <Row gutter={[24, 24]}>
-          {config.features.map((feature, index) => (
-            <Col xs={24} md={8} key={index}>
-              <Card
-                className='backdrop-blur-md border-white/10 h-full hover:shadow-xl transition-all duration-300 hover:scale-105'
-                bordered={false}
-                style={{
-                  background: 'rgba(255, 255, 255, 0.03)',
-                  borderRadius: '16px',
-                }}
-              >
-                <div className='text-center'>
-                  <div className='text-5xl mb-4 text-indigo-400'>
-                    {iconMap[feature.icon] || <RocketOutlined />}
+      {/* Research Areas Section */}
+      {researchData && (
+        <div className='container mx-auto px-4 py-12 bg-transparent'>
+          <Title level={2} className='!text-white text-center !mb-8'>
+            Research Areas
+          </Title>
+
+          <Row gutter={[24, 24]}>
+            {researchData.researchAreas.map((area) => (
+              <Col xs={24} lg={12} key={area.id}>
+                <Card
+                  id={`area-${area.id}`}
+                  className='glass-card h-full'
+                  style={{ borderTop: `4px solid ${area.color}` }}
+                >
+                  <div className='flex items-center gap-3 mb-4'>
+                    <div
+                      className='text-2xl p-3 rounded-xl'
+                      style={{
+                        background: `${area.color}20`,
+                        color: area.color,
+                      }}
+                    >
+                      {getAreaIcon(area.icon)}
+                    </div>
+                    <Title level={3} className='!text-xl !text-white !mb-0'>
+                      {area.name}
+                    </Title>
                   </div>
-                  <Title level={4} className='!text-white !mb-3'>
-                    {feature.title}
-                  </Title>
-                  <Paragraph className='!text-white/70'>
-                    {feature.description}
+
+                  <Paragraph className='text-white/70 mb-4'>
+                    {area.description}
                   </Paragraph>
-                </div>
-              </Card>
-            </Col>
-          ))}
-        </Row>
-      </div>
+
+                  <div className='mt-6'>
+                    {area.url && (
+                      <a
+                        href={area.url}
+                        target='_blank'
+                        rel='noopener noreferrer'
+                        className='inline-flex items-center gap-2 text-white hover:text-indigo-300 transition-colors group'
+                      >
+                        <span className='font-medium'>Learn More</span>
+                        <RightOutlined className='group-hover:translate-x-1 transition-transform' />
+                      </a>
+                    )}
+                  </div>
+                </Card>
+              </Col>
+            ))}
+          </Row>
+        </div>
+      )}
+
+      {/* Statistics Section */}
+      {config.statistics.showStats && stats && (
+        <div className='container mx-auto px-4 py-12 bg-transparent'>
+          <Card
+            className='backdrop-blur-md border-white/10 shadow-2xl'
+            style={{
+              background: 'rgba(255, 255, 255, 0.03)',
+              borderRadius: '16px',
+            }}
+          >
+            <Row gutter={[24, 24]} justify='center'>
+              <Col xs={24} sm={8} md={8}>
+                <Statistic
+                  title={<span className='text-white/70'>Team Members</span>}
+                  value={stats.members}
+                  styles={{ content: { color: '#818cf8', fontSize: '2.5rem' } }}
+                  prefix={<TeamOutlined />}
+                />
+              </Col>
+              <Col xs={24} sm={8} md={8}>
+                <Statistic
+                  title={<span className='text-white/70'>Skills Tracked</span>}
+                  value={stats.skills}
+                  styles={{ content: { color: '#c084fc', fontSize: '2.5rem' } }}
+                  prefix={<RocketOutlined />}
+                />
+              </Col>
+              <Col xs={24} sm={8} md={8}>
+                <Statistic
+                  title={<span className='text-white/70'>Categories</span>}
+                  value={stats.categories}
+                  styles={{ content: { color: '#a78bfa', fontSize: '2.5rem' } }}
+                  prefix={<SearchOutlined />}
+                />
+              </Col>
+              {config.statistics.customStats.map((stat, index) => (
+                <Col xs={24} sm={8} md={8} key={index}>
+                  <Statistic
+                    title={<span className='text-white/70'>{stat.title}</span>}
+                    value={stat.value}
+                    suffix={stat.suffix}
+                    styles={{
+                      content: { color: '#818cf8', fontSize: '2.5rem' },
+                    }}
+                  />
+                </Col>
+              ))}
+            </Row>
+          </Card>
+        </div>
+      )}
 
       {/* Quick Links Section */}
       <div className='container mx-auto px-4 py-12 pb-20 bg-transparent'>
@@ -334,7 +361,7 @@ const HomePage: React.FC = () => {
               <Link to={link.link}>
                 <Card
                   className='backdrop-blur-md border-white/10 h-full hover:shadow-xl transition-all duration-300 hover:scale-105 cursor-pointer'
-                  bordered={false}
+                  variant='borderless'
                   style={{
                     background: 'rgba(255, 255, 255, 0.03)',
                     borderRadius: '16px',

@@ -1,0 +1,37 @@
+{
+  "lab": {
+    "name": "HCIS Lab",
+    "fullName": "Human-Centered Intelligent Systems Lab",
+    "institution": "National Yang Ming Chiao Tung University",
+    "department": "Department of Computer Science",
+    "pi": {
+      "name": "Yi-Ting Chen",
+      "title": "Associate Professor",
+      "email": "ychen [at] cs.nycu.edu.tw",
+      "links": {
+        "cv": "https://drive.google.com/file/d/1LOtGzv_tZDOLgHGKkwYDWtCMZv_y8gUp/view",
+        "googleScholar": "https://scholar.google.com/citations?user=8tRH7RMAAAAJ&hl=en",
+        "dblp": "https://dblp.org/pid/12/5268-1.html"
+      }
+    },
+    "philosophy": "Developing Human-Centered Physical AI Systems that bridge human needs with autonomous system capabilities"
+  },
+  "researchAreas": [
+    {
+      "id": "intelligent-driving",
+      "name": "Intelligent Driving Systems",
+      "description": "Developing intelligent systems that understand driving scenes, assess risks, and enable safer autonomous driving through human-centric design principles.",
+      "color": "#5dade2",
+      "icon": "car",
+      "url": "https://sites.google.com/site/yitingchen0524/research/intelligent-driving-systems"
+    },
+    {
+      "id": "assistive-robotics",
+      "name": "Assistive Robotics",
+      "description": "Creating robots that assist humans in daily tasks through intelligent perception, manipulation, and human-robot interaction.",
+      "color": "#eb984e",
+      "icon": "robot",
+      "url": "https://sites.google.com/site/yitingchen0524/research/assistive-robotics"
+    }
+  ]
+}
