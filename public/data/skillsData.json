@@ -30,387 +30,265 @@
       "id": "rl-online",
       "name": "Online RL",
       "description": "Online reinforcement learning",
-      "belongsTo": [
-        "environment",
-        "robots"
-      ]
+      "belongsTo": ["environment", "robots"]
     },
     {
       "id": "rl-offline",
       "name": "Offline RL",
       "description": "Offline/batch reinforcement learning",
-      "belongsTo": [
-        "environment"
-      ]
+      "belongsTo": ["environment"]
     },
     {
       "id": "imitation-learning",
       "name": "Imitation Learning",
       "description": "Learning from demonstrations",
-      "belongsTo": [
-        "environment",
-        "robots"
-      ]
+      "belongsTo": ["environment", "robots"]
     },
     {
       "id": "model-based-rl",
       "name": "Model-based RL",
       "description": "Model-based reinforcement learning",
-      "belongsTo": [
-        "environment",
-        "robots"
-      ]
+      "belongsTo": ["environment", "robots"]
     },
     {
       "id": "computer-vision",
       "name": "Computer Vision",
       "description": "Visual perception and understanding",
-      "belongsTo": [
-        "robots",
-        "caregiver",
-        "care-recipient"
-      ]
+      "belongsTo": ["robots", "caregiver", "care-recipient"]
     },
     {
       "id": "world-models",
       "name": "World Models",
       "description": "Predictive models of environment",
-      "belongsTo": [
-        "environment"
-      ]
+      "belongsTo": ["environment"]
     },
     {
       "id": "foundation-models",
       "name": "Foundation Models",
       "description": "Large multimodal foundation models",
-      "belongsTo": [
-        "robots",
-        "environment",
-        "caregiver"
-      ]
+      "belongsTo": ["robots", "environment", "caregiver"]
     },
     {
       "id": "policy-manipulation",
       "name": "Policy for Manipulation",
       "description": "Control policies for manipulation tasks",
-      "belongsTo": [
-        "robots",
-        "caregiver"
-      ]
+      "belongsTo": ["robots", "caregiver"]
     },
     {
       "id": "policy-locomotion",
       "name": "Policy for Locomotion",
       "description": "Control policies for locomotion",
-      "belongsTo": [
-        "robots"
-      ]
+      "belongsTo": ["robots"]
     },
     {
       "id": "physics-engines",
       "name": "Physics Engines",
       "description": "MuJoCo, Isaac, Bullet, PhysX",
-      "belongsTo": [
-        "environment",
-        "robots"
-      ]
+      "belongsTo": ["environment", "robots"]
     },
     {
       "id": "3d-asset-creation",
       "name": "3D Asset Creation",
       "description": "Blender, USD, NeRFs, 3D Gaussian Splatting",
-      "belongsTo": [
-        "environment"
-      ]
+      "belongsTo": ["environment"]
     },
     {
       "id": "domain-randomization",
       "name": "Domain Randomization",
       "description": "Randomization for sim-to-real transfer",
-      "belongsTo": [
-        "environment"
-      ]
+      "belongsTo": ["environment"]
     },
     {
       "id": "system-identification",
       "name": "System Identification",
       "description": "Parameter identification for simulation",
-      "belongsTo": [
-        "robots",
-        "environment"
-      ]
+      "belongsTo": ["robots", "environment"]
     },
     {
       "id": "sim-to-real",
       "name": "Sim-to-Real Transfer",
       "description": "Transferring from simulation to reality",
-      "belongsTo": [
-        "environment",
-        "robots"
-      ]
+      "belongsTo": ["environment", "robots"]
     },
     {
       "id": "real-to-sim",
       "name": "Real-to-Sim Calibration",
       "description": "Calibrating simulation from real data",
-      "belongsTo": [
-        "environment",
-        "robots"
-      ]
+      "belongsTo": ["environment", "robots"]
     },
     {
       "id": "synthetic-data",
       "name": "Synthetic Data Generation",
       "description": "Generating training data in simulation",
-      "belongsTo": [
-        "environment"
-      ]
+      "belongsTo": ["environment"]
     },
     {
       "id": "sensor-simulation",
       "name": "Sensor Simulation",
       "description": "RGB, depth, tactile, force sensors",
-      "belongsTo": [
-        "robots",
-        "environment"
-      ]
+      "belongsTo": ["robots", "environment"]
     },
     {
       "id": "robot-arms",
       "name": "Robot Arms",
       "description": "Manipulator hardware and control",
-      "belongsTo": [
-        "robots"
-      ]
+      "belongsTo": ["robots"]
     },
     {
       "id": "mobile-robots",
       "name": "Mobile Robots",
       "description": "Mobile base platforms",
-      "belongsTo": [
-        "robots"
-      ]
+      "belongsTo": ["robots"]
     },
     {
       "id": "legged-robots",
       "name": "Legged Robots",
       "description": "Quadruped and humanoid robots",
-      "belongsTo": [
-        "robots"
-      ]
+      "belongsTo": ["robots"]
     },
     {
       "id": "sensor-integration",
       "name": "Sensor Integration",
       "description": "Integrating various sensors",
-      "belongsTo": [
-        "robots"
-      ]
+      "belongsTo": ["robots"]
     },
     {
       "id": "teleoperation",
       "name": "Teleoperation",
       "description": "VR, SpaceMouse, MoCap systems",
-      "belongsTo": [
-        "robots",
-        "caregiver"
-      ]
+      "belongsTo": ["robots", "caregiver"]
     },
     {
       "id": "calibration",
       "name": "Calibration",
       "description": "Robot and sensor calibration",
-      "belongsTo": [
-        "robots"
-      ]
+      "belongsTo": ["robots"]
     },
     {
       "id": "low-level-control",
       "name": "Low-level Control",
       "description": "Motor control and dynamics",
-      "belongsTo": [
-        "robots"
-      ]
+      "belongsTo": ["robots"]
     },
     {
       "id": "safety-systems",
       "name": "Safety Systems",
       "description": "Robot safety mechanisms",
-      "belongsTo": [
-        "robots",
-        "caregiver",
-        "care-recipient"
-      ]
+      "belongsTo": ["robots", "caregiver", "care-recipient"]
     },
     {
       "id": "ros",
       "name": "ROS/ROS2",
       "description": "Robot Operating System",
-      "belongsTo": [
-        "robots",
-        "environment"
-      ]
+      "belongsTo": ["robots", "environment"]
     },
     {
       "id": "data-pipelines",
       "name": "Data Pipelines",
       "description": "Logging, storage, replay systems",
-      "belongsTo": [
-        "environment"
-      ]
+      "belongsTo": ["environment"]
     },
     {
       "id": "distributed-training",
       "name": "Distributed Training",
       "description": "Large-scale training infrastructure",
-      "belongsTo": [
-        "environment"
-      ]
+      "belongsTo": ["environment"]
     },
     {
       "id": "cloud-computing",
       "name": "Cloud Computing",
       "description": "Cloud and cluster resources",
-      "belongsTo": [
-        "environment"
-      ]
+      "belongsTo": ["environment"]
     },
     {
       "id": "experiment-management",
       "name": "Experiment Management",
       "description": "Tracking and organizing experiments",
-      "belongsTo": [
-        "environment"
-      ]
+      "belongsTo": ["environment"]
     },
     {
       "id": "reproducibility",
       "name": "Reproducibility",
       "description": "Ensuring reproducible research",
-      "belongsTo": [
-        "environment"
-      ]
+      "belongsTo": ["environment"]
     },
     {
       "id": "benchmark-design",
       "name": "Benchmark Design",
       "description": "Designing evaluation benchmarks",
-      "belongsTo": [
-        "environment",
-        "robots"
-      ]
+      "belongsTo": ["environment", "robots"]
     },
     {
       "id": "human-activity-recognition",
       "name": "Human Activity Recognition (HAR)",
       "description": "Identifying Activities of Daily Living (ADL)",
-      "belongsTo": [
-        "care-recipient",
-        "environment"
-      ]
+      "belongsTo": ["care-recipient", "environment"]
     },
     {
       "id": "physical-hri",
       "name": "Physical HRI (pHRI)",
       "description": "Safe physical contact, compliant control, lift-assist",
-      "belongsTo": [
-        "robots",
-        "caregiver",
-        "care-recipient"
-      ]
+      "belongsTo": ["robots", "caregiver", "care-recipient"]
     },
     {
       "id": "social-navigation",
       "name": "Social Navigation",
       "description": "Navigating crowds/homes respecting personal space",
-      "belongsTo": [
-        "robots",
-        "environment",
-        "care-recipient"
-      ]
+      "belongsTo": ["robots", "environment", "care-recipient"]
     },
     {
       "id": "affective-computing",
       "name": "Affective Computing",
       "description": "Detecting emotion, pain, and stress levels",
-      "belongsTo": [
-        "care-recipient",
-        "caregiver"
-      ]
+      "belongsTo": ["care-recipient", "caregiver"]
     },
     {
       "id": "human-intent-prediction",
       "name": "Human Intent Prediction",
       "description": "Predicting human movement and goals",
-      "belongsTo": [
-        "caregiver",
-        "robots"
-      ]
+      "belongsTo": ["caregiver", "robots"]
     },
     {
       "id": "vital-monitoring",
       "name": "Vital Signs Monitoring",
       "description": "Non-invasive health tracking (rPPG, Thermal)",
-      "belongsTo": [
-        "care-recipient",
-        "robots"
-      ]
+      "belongsTo": ["care-recipient", "robots"]
     },
     {
       "id": "multimodal-hri",
       "name": "Multimodal HRI",
       "description": "Voice, gesture, and gaze interaction",
-      "belongsTo": [
-        "caregiver",
-        "care-recipient",
-        "robots"
-      ]
+      "belongsTo": ["caregiver", "care-recipient", "robots"]
     },
     {
       "id": "biomechanics-ergonomics",
       "name": "Biomechanics & Ergonomics",
       "description": "Modeling human joint limits and comfort",
-      "belongsTo": [
-        "care-recipient",
-        "caregiver"
-      ]
+      "belongsTo": ["care-recipient", "caregiver"]
     },
     {
       "id": "trust-explainability",
       "name": "Trust & Explainability (XAI)",
       "description": "Ensuring users trust and understand robot actions",
-      "belongsTo": [
-        "caregiver",
-        "care-recipient"
-      ]
+      "belongsTo": ["caregiver", "care-recipient"]
     },
     {
       "id": "rehab-robotics",
       "name": "Rehabilitation Robotics",
       "description": "Exoskeletons and therapeutic exercise assistance",
-      "belongsTo": [
-        "robots",
-        "care-recipient"
-      ]
+      "belongsTo": ["robots", "care-recipient"]
     },
     {
       "id": "privacy-security",
       "name": "Privacy & Data Security",
       "description": "HIPAA compliance, edge processing, de-identification",
-      "belongsTo": [
-        "care-recipient",
-        "environment"
-      ]
+      "belongsTo": ["care-recipient", "environment"]
     },
     {
       "id": "assistive-telepresence",
       "name": "Assistive Telepresence",
       "description": "Remote care delivery and social connectedness",
-      "belongsTo": [
-        "caregiver",
-        "care-recipient",
-        "robots"
-      ]
+      "belongsTo": ["caregiver", "care-recipient", "robots"]
     }
   ],
   "members": [
