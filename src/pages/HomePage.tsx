@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import {
   Card,
@@ -9,6 +9,8 @@ import {
   Statistic,
   Space,
   Spin,
+  Tag,
+  Tooltip,
 } from 'antd';
 import {
   TeamOutlined,
@@ -17,7 +19,14 @@ import {
   GithubOutlined,
   GlobalOutlined,
   RocketOutlined,
+  CarOutlined,
+  RobotOutlined,
+  FileTextOutlined,
+  CalendarOutlined,
+  LinkOutlined,
+  RightOutlined,
 } from '@ant-design/icons';
+import ResearchVisionChart from '../components/ResearchVisionChart';
 
 const { Title, Paragraph, Text } = Typography;
 
@@ -70,6 +79,55 @@ interface SkillsData {
   }>;
 }
 
+interface Publication {
+  title: string;
+  venue: string;
+  authors: string[];
+  links: {
+    paper?: string;
+    projectPage?: string;
+    code?: string;
+    ieee?: string;
+    nvidia?: string;
+  };
+}
+
+interface FocusArea {
+  id: string;
+  name: string;
+  description: string;
+}
+
+interface ResearchArea {
+  id: string;
+  name: string;
+  description: string;
+  color: string;
+  icon: string;
+  focusAreas: FocusArea[];
+  publications: Publication[];
+}
+
+interface NewsItem {
+  date: string;
+  text: string;
+  highlight?: boolean;
+  links?: {
+    paper?: string;
+    website?: string;
+  };
+}
+
+interface ResearchData {
+  lab: {
+    name: string;
+    fullName: string;
+    philosophy: string;
+  };
+  researchAreas: ResearchArea[];
+  recentNews: NewsItem[];
+}
+
 const iconMap: Record<string, React.ReactNode> = {
   TeamOutlined: <TeamOutlined />,
   SearchOutlined: <SearchOutlined />,
@@ -79,25 +137,30 @@ const iconMap: Record<string, React.ReactNode> = {
 
 const HomePage: React.FC = () => {
   const [config, setConfig] = useState<HomeConfig | null>(null);
+  const [researchData, setResearchData] = useState<ResearchData | null>(null);
   const [stats, setStats] = useState<{
     members: number;
     skills: number;
     categories: number;
   } | null>(null);
   const [loading, setLoading] = useState(true);
+  const researchAreasRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const loadData = async () => {
       try {
-        const [configRes, skillsRes] = await Promise.all([
+        const [configRes, skillsRes, researchRes] = await Promise.all([
           fetch(`${import.meta.env.BASE_URL}data/homeConfig.json`),
           fetch(`${import.meta.env.BASE_URL}data/skillsData.json`),
+          fetch(`${import.meta.env.BASE_URL}data/researchData.json`),
         ]);
 
         const configData = await configRes.json();
         const skillsData: SkillsData = await skillsRes.json();
+        const researchDataJson = await researchRes.json();
 
         setConfig(configData);
+        setResearchData(researchDataJson);
         setStats({
           members: skillsData.members.length,
           skills: skillsData.skills.length,
@@ -112,6 +175,24 @@ const HomePage: React.FC = () => {
 
     loadData();
   }, []);
+
+  const handleAreaClick = (areaId: string) => {
+    const element = document.getElementById(`area-${areaId}`);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
+
+  const getAreaIcon = (icon: string) => {
+    switch (icon) {
+      case 'car':
+        return <CarOutlined />;
+      case 'robot':
+        return <RobotOutlined />;
+      default:
+        return <GlobalOutlined />;
+    }
+  };
 
   if (loading) {
     return (
@@ -196,6 +277,246 @@ const HomePage: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Research Vision Section */}
+      {researchData && (
+        <div className='container mx-auto px-4 py-16 bg-transparent'>
+          <div className='text-center mb-8'>
+            <Title level={2} className='!text-white !mb-4'>
+              Research Vision
+            </Title>
+            <Paragraph className='!text-white/60 max-w-2xl mx-auto'>
+              {researchData.lab.philosophy}
+            </Paragraph>
+          </div>
+
+          <ResearchVisionChart onAreaClick={handleAreaClick} />
+
+          <div className='text-center mt-6'>
+            <Text className='text-white/50 text-sm italic'>
+              Click on the circles to explore related research areas
+            </Text>
+          </div>
+        </div>
+      )}
+
+      {/* Research Areas Section */}
+      {researchData && (
+        <div
+          ref={researchAreasRef}
+          className='container mx-auto px-4 py-12 bg-transparent'
+        >
+          <Title level={2} className='!text-white text-center !mb-8'>
+            Research Areas
+          </Title>
+
+          <Row gutter={[24, 24]}>
+            {researchData.researchAreas.map((area) => (
+              <Col xs={24} lg={12} key={area.id}>
+                <Card
+                  id={`area-${area.id}`}
+                  className='glass-card h-full'
+                  style={{ borderTop: `4px solid ${area.color}` }}
+                >
+                  <div className='flex items-center gap-3 mb-4'>
+                    <div
+                      className='text-2xl p-3 rounded-xl'
+                      style={{
+                        background: `${area.color}20`,
+                        color: area.color,
+                      }}
+                    >
+                      {getAreaIcon(area.icon)}
+                    </div>
+                    <Title level={3} className='!text-xl !text-white !mb-0'>
+                      {area.name}
+                    </Title>
+                  </div>
+
+                  <Paragraph className='text-white/70 mb-4'>
+                    {area.description}
+                  </Paragraph>
+
+                  {/* Focus Areas */}
+                  <div className='mb-6'>
+                    <Text strong className='text-white/80 block mb-3'>
+                      Focus Areas:
+                    </Text>
+                    <div className='space-y-3'>
+                      {area.focusAreas.map((focus) => (
+                        <div
+                          key={focus.id}
+                          className='p-3 rounded-lg bg-white/5 hover:bg-white/10 transition-all'
+                        >
+                          <Text strong className='text-white block mb-1'>
+                            {focus.name}
+                          </Text>
+                          <Text className='text-white/60 text-sm'>
+                            {focus.description}
+                          </Text>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Recent Publications */}
+                  <div>
+                    <Text strong className='text-white/80 block mb-3'>
+                      Selected Publications:
+                    </Text>
+                    <div className='space-y-3'>
+                      {area.publications.slice(0, 3).map((pub, idx) => (
+                        <div
+                          key={idx}
+                          className='p-3 rounded-lg bg-white/5 hover:bg-white/10 transition-all'
+                        >
+                          <div className='flex items-start justify-between gap-2'>
+                            <div className='flex-1'>
+                              <Text className='text-white text-sm block mb-1'>
+                                {pub.title}
+                              </Text>
+                              <Tag color={area.color} className='text-xs mb-2'>
+                                {pub.venue}
+                              </Tag>
+                            </div>
+                          </div>
+                          <div className='flex flex-wrap gap-2 mt-2'>
+                            {pub.links.paper && (
+                              <Tooltip title='Paper'>
+                                <a
+                                  href={pub.links.paper}
+                                  target='_blank'
+                                  rel='noopener noreferrer'
+                                  className='text-white/60 hover:text-white transition-colors'
+                                >
+                                  <FileTextOutlined className='text-lg' />
+                                </a>
+                              </Tooltip>
+                            )}
+                            {pub.links.projectPage && (
+                              <Tooltip title='Project Page'>
+                                <a
+                                  href={pub.links.projectPage}
+                                  target='_blank'
+                                  rel='noopener noreferrer'
+                                  className='text-white/60 hover:text-white transition-colors'
+                                >
+                                  <GlobalOutlined className='text-lg' />
+                                </a>
+                              </Tooltip>
+                            )}
+                            {pub.links.code && (
+                              <Tooltip title='Code'>
+                                <a
+                                  href={pub.links.code}
+                                  target='_blank'
+                                  rel='noopener noreferrer'
+                                  className='text-white/60 hover:text-white transition-colors'
+                                >
+                                  <GithubOutlined className='text-lg' />
+                                </a>
+                              </Tooltip>
+                            )}
+                            {pub.links.ieee && (
+                              <Tooltip title='IEEE'>
+                                <a
+                                  href={pub.links.ieee}
+                                  target='_blank'
+                                  rel='noopener noreferrer'
+                                  className='text-white/60 hover:text-white transition-colors'
+                                >
+                                  <LinkOutlined className='text-lg' />
+                                </a>
+                              </Tooltip>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </Card>
+              </Col>
+            ))}
+          </Row>
+        </div>
+      )}
+
+      {/* Recent News Section */}
+      {researchData && researchData.recentNews.length > 0 && (
+        <div className='container mx-auto px-4 py-12 bg-transparent'>
+          <Title level={2} className='!text-white text-center !mb-8'>
+            Recent News & Updates
+          </Title>
+
+          <Card className='glass-card'>
+            <div className='space-y-4'>
+              {researchData.recentNews.slice(0, 8).map((news, idx) => (
+                <div
+                  key={idx}
+                  className={`flex items-start gap-4 p-4 rounded-lg transition-all ${
+                    news.highlight
+                      ? 'bg-indigo-500/10 border border-indigo-500/30'
+                      : 'bg-white/5 hover:bg-white/10'
+                  }`}
+                >
+                  <div className='flex-shrink-0'>
+                    <Tag
+                      color={news.highlight ? 'gold' : 'default'}
+                      icon={<CalendarOutlined />}
+                    >
+                      {news.date}
+                    </Tag>
+                  </div>
+                  <div className='flex-1'>
+                    <Text className='text-white'>{news.text}</Text>
+                    {news.links && (
+                      <div className='flex gap-3 mt-2'>
+                        {news.links.paper && (
+                          <a
+                            href={news.links.paper}
+                            target='_blank'
+                            rel='noopener noreferrer'
+                            className='text-indigo-400 hover:text-indigo-300 text-sm flex items-center gap-1'
+                          >
+                            <FileTextOutlined /> Paper
+                          </a>
+                        )}
+                        {news.links.website && (
+                          <a
+                            href={news.links.website}
+                            target='_blank'
+                            rel='noopener noreferrer'
+                            className='text-indigo-400 hover:text-indigo-300 text-sm flex items-center gap-1'
+                          >
+                            <GlobalOutlined /> Website
+                          </a>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                  {news.highlight && (
+                    <div className='flex-shrink-0'>
+                      <Tag color='gold'>NEW</Tag>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+
+            <div className='text-center mt-6'>
+              <Button
+                type='link'
+                href='https://sites.google.com/site/yitingchen0524/home'
+                target='_blank'
+                icon={<RightOutlined />}
+                className='text-indigo-400'
+              >
+                View All News
+              </Button>
+            </div>
+          </Card>
+        </div>
+      )}
 
       {/* Statistics Section */}
       {config.statistics.showStats && stats && (
