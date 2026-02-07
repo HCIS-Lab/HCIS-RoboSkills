@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
   Card,
@@ -108,7 +108,6 @@ const HomePage: React.FC = () => {
     categories: number;
   } | null>(null);
   const [loading, setLoading] = useState(true);
-  const researchAreasRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const loadData = async () => {
@@ -139,13 +138,6 @@ const HomePage: React.FC = () => {
 
     loadData();
   }, []);
-
-  const handleAreaClick = (areaId: string) => {
-    const element = document.getElementById(`area-${areaId}`);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-  };
 
   const getAreaIcon = (icon: string) => {
     switch (icon) {
@@ -254,22 +246,13 @@ const HomePage: React.FC = () => {
             </Paragraph>
           </div>
 
-          <ResearchVisionChart onAreaClick={handleAreaClick} />
-
-          <div className='text-center mt-6'>
-            <Text className='text-white/50 text-sm italic'>
-              Click on the circles to explore related research areas
-            </Text>
-          </div>
+          <ResearchVisionChart />
         </div>
       )}
 
       {/* Research Areas Section */}
       {researchData && (
-        <div
-          ref={researchAreasRef}
-          className='container mx-auto px-4 py-12 bg-transparent'
-        >
+        <div className='container mx-auto px-4 py-12 bg-transparent'>
           <Title level={2} className='!text-white text-center !mb-8'>
             Research Areas
           </Title>

@@ -1,10 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import * as d3 from 'd3';
 
-interface ResearchVisionChartProps {
-  onAreaClick?: (areaId: string) => void;
-}
-
+// removed props interface
 interface TooltipData {
   label: string;
   description: string;
@@ -12,9 +9,7 @@ interface TooltipData {
   y: number;
 }
 
-const ResearchVisionChart: React.FC<ResearchVisionChartProps> = ({
-  onAreaClick,
-}) => {
+const ResearchVisionChart: React.FC = () => {
   const svgRef = useRef<SVGSVGElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [dimensions, setDimensions] = useState({ width: 800, height: 500 });
@@ -121,7 +116,6 @@ const ResearchVisionChart: React.FC<ResearchVisionChartProps> = ({
       .attr('fill', 'rgba(130, 224, 170, 0.7)')
       .attr('stroke', '#27ae60')
       .attr('stroke-width', 2)
-      .style('cursor', 'pointer')
       .on('mouseenter', function (event) {
         d3.select(this).style('filter', 'url(#glow)');
         setTooltip({
@@ -159,7 +153,6 @@ const ResearchVisionChart: React.FC<ResearchVisionChartProps> = ({
       .attr('fill', 'rgba(93, 173, 226, 0.75)')
       .attr('stroke', '#2980b9')
       .attr('stroke-width', 2)
-      .style('cursor', 'pointer')
       .on('mouseenter', function (event) {
         d3.select(this).style('filter', 'url(#glow)');
         setTooltip({
@@ -173,8 +166,7 @@ const ResearchVisionChart: React.FC<ResearchVisionChartProps> = ({
       .on('mouseleave', function () {
         d3.select(this).style('filter', 'none');
         setTooltip(null);
-      })
-      .on('click', () => onAreaClick?.('intelligent-driving'));
+      });
 
     g.append('text')
       .attr('x', robotsX + 18 * scale)
@@ -198,7 +190,6 @@ const ResearchVisionChart: React.FC<ResearchVisionChartProps> = ({
       .attr('fill', 'rgba(235, 152, 78, 0.7)')
       .attr('stroke', '#e67e22')
       .attr('stroke-width', 2)
-      .style('cursor', 'pointer')
       .on('mouseenter', function (event) {
         d3.select(this).style('filter', 'url(#glow)');
         setTooltip({
@@ -212,8 +203,7 @@ const ResearchVisionChart: React.FC<ResearchVisionChartProps> = ({
       .on('mouseleave', function () {
         d3.select(this).style('filter', 'none');
         setTooltip(null);
-      })
-      .on('click', () => onAreaClick?.('assistive-robotics'));
+      });
 
     g.append('text')
       .attr('x', recipientX)
@@ -288,7 +278,6 @@ const ResearchVisionChart: React.FC<ResearchVisionChartProps> = ({
       .attr('fill', 'rgba(93, 173, 226, 0.85)')
       .attr('stroke', '#2980b9')
       .attr('stroke-width', 3)
-      .style('cursor', 'pointer')
       .on('mouseenter', function (event) {
         d3.select(this).style('filter', 'url(#glow)');
         setTooltip({
@@ -301,8 +290,7 @@ const ResearchVisionChart: React.FC<ResearchVisionChartProps> = ({
       .on('mouseleave', function () {
         d3.select(this).style('filter', 'none');
         setTooltip(null);
-      })
-      .on('click', () => onAreaClick?.('intelligent-driving'));
+      });
 
     // Robot label
     g.append('text')
@@ -350,7 +338,6 @@ const ResearchVisionChart: React.FC<ResearchVisionChartProps> = ({
       .attr('fill', 'url(#humanGradient)')
       .attr('stroke', '#d4ac0d')
       .attr('stroke-width', 2)
-      .style('cursor', 'pointer')
       .style('filter', 'url(#glow)')
       .on('mouseenter', function (event) {
         d3.select(this)
@@ -367,8 +354,7 @@ const ResearchVisionChart: React.FC<ResearchVisionChartProps> = ({
       .on('mouseleave', function () {
         d3.select(this).transition().duration(200).attr('r', humanRadius);
         setTooltip(null);
-      })
-      .on('click', () => onAreaClick?.('assistive-robotics'));
+      });
 
     g.append('text')
       .attr('x', zoomX)
@@ -510,7 +496,7 @@ const ResearchVisionChart: React.FC<ResearchVisionChartProps> = ({
       '#5dade2',
       'middle',
     );
-  }, [dimensions, onAreaClick]);
+  }, [dimensions]);
 
   return (
     <div ref={containerRef} className='research-vision-chart w-full'>
