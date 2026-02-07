@@ -20,10 +20,19 @@ const ResearchVisionChart: React.FC = () => {
     const updateDims = () => {
       if (containerRef.current) {
         const rect = containerRef.current.getBoundingClientRect();
-        const w = Math.max(600, Math.min(900, rect.width));
+        const w = rect.width;
+        // Determines if we should switch to vertical layout
+        const isMobile = w < 768;
+
+        // Calculate height based on layout
+        // Mobile needs more height for vertical stacking
+        const h = isMobile
+          ? Math.max(600, w * 1.6) // Vertical stack needs more height ratio
+          : Math.max(450, w * 0.55); // Desktop aspect ratio
+
         setDimensions({
           width: w,
-          height: Math.max(450, w * 0.55),
+          height: h,
         });
       }
     };
@@ -40,15 +49,26 @@ const ResearchVisionChart: React.FC = () => {
     svg.selectAll('*').remove();
 
     const { width, height } = dimensions;
-    const scale = Math.min(width / 800, height / 500);
+    const isVertical = width < 768; // Mobile breakpoint
 
-    // Main ecosystem center
-    const ecoX = width * 0.35;
-    const ecoY = height * 0.5;
+    // Adjust scale - on mobile we want items to be relatively larger to be readable
+    // Desktop base: 800x500. Mobile base: ~400x700
+    const baseScale = isVertical
+      ? Math.min(width / 400, height / 800) * 0.85
+      : Math.min(width / 800, height / 500);
 
-    // Zoom callout position (to the right)
-    const zoomX = width * 0.72;
-    const zoomY = height * 0.5;
+    // Enforce reasonable min/max scale
+    const scale = Math.max(0.6, Math.min(1.2, baseScale));
+
+    // Positions based on layout
+    const ecoX = width * 0.5;
+    // On desktop, adjust centers to be side-by-side. On mobile, stack them.
+    const ecoCenterX = isVertical ? width * 0.5 : width * 0.35;
+    const ecoCenterY = isVertical ? height * 0.25 : height * 0.5;
+
+    const zoomCenterX = isVertical ? width * 0.5 : width * 0.72;
+    const zoomCenterY = isVertical ? height * 0.72 : height * 0.5;
+
     const zoomRadius = 100 * scale;
 
     // Defs
@@ -82,12 +102,12 @@ const ResearchVisionChart: React.FC = () => {
 
     const g = svg.append('g');
 
-    // ===== ECOSYSTEM (LEFT SIDE) =====
+    // ===== ECOSYSTEM (LEFT/TOP SIDE) =====
 
     // Environment outer ellipse
     g.append('ellipse')
-      .attr('cx', ecoX)
-      .attr('cy', ecoY)
+      .attr('cx', ecoCenterX)
+      .attr('cy', ecoCenterY)
       .attr('rx', 180 * scale)
       .attr('ry', 140 * scale)
       .attr('fill', 'rgba(245, 215, 110, 0.12)')
@@ -96,8 +116,8 @@ const ResearchVisionChart: React.FC = () => {
 
     // Environment label
     g.append('text')
-      .attr('x', ecoX)
-      .attr('y', ecoY - 100 * scale)
+      .attr('x', ecoCenterX)
+      .attr('y', ecoCenterY - 110 * scale)
       .attr('text-anchor', 'middle')
       .attr('fill', '#a08050')
       .attr('font-size', `${16 * scale}px`)
@@ -105,8 +125,8 @@ const ResearchVisionChart: React.FC = () => {
       .text('Environment (Agent)');
 
     // CAREGIVER circle (left in ecosystem)
-    const caregiverX = ecoX - 55 * scale;
-    const caregiverY = ecoY - 15 * scale;
+    const caregiverX = ecoCenterX - 55 * scale;
+    const caregiverY = ecoCenterY - 15 * scale;
     const caregiverR = 60 * scale;
 
     g.append('circle')
@@ -142,8 +162,8 @@ const ResearchVisionChart: React.FC = () => {
       .text('Caregiver');
 
     // ROBOTS circle (right in ecosystem - connects to zoom)
-    const robotsX = ecoX + 55 * scale;
-    const robotsY = ecoY - 15 * scale;
+    const robotsX = ecoCenterX + 55 * scale;
+    const robotsY = ecoCenterY - 15 * scale;
     const robotsR = 60 * scale;
 
     g.append('circle')
@@ -179,8 +199,8 @@ const ResearchVisionChart: React.FC = () => {
       .text('Robots');
 
     // CARE RECIPIENT circle (bottom center in ecosystem)
-    const recipientX = ecoX;
-    const recipientY = ecoY + 50 * scale;
+    const recipientX = ecoCenterX;
+    const recipientY = ecoCenterY + 50 * scale;
     const recipientR = 55 * scale;
 
     g.append('circle')
@@ -227,21 +247,46 @@ const ResearchVisionChart: React.FC = () => {
 
     // ===== ZOOM CONNECTOR LINE =====
 
-    // Dashed curved line from Robots to Zoom callout
-    const lineStart = {
-      x: robotsX + robotsR * 0.7,
-      y: robotsY - robotsR * 0.5,
-    };
-    const lineEnd = {
-      x: zoomX - zoomRadius - 10 * scale,
-      y: zoomY - zoomRadius * 0.3,
-    };
+    // Calculate connection points based on layout
+    let lineStart, lineEnd, controlPoint;
+
+    if (isVertical) {
+      // Connect from bottom-right (45 deg) of Robots circle
+      // 45 degrees counter-clockwise from bottom (90 deg) -> 45 deg
+      const angle = Math.PI / 4;
+      lineStart = {
+        x: robotsX + robotsR * Math.cos(angle),
+        y: robotsY + robotsR * Math.sin(angle),
+      };
+      lineEnd = {
+        x: zoomCenterX,
+        y: zoomCenterY - zoomRadius - 10 * scale,
+      };
+      controlPoint = {
+        x: robotsX + robotsR + 20 * scale, // Curve out to the right
+        y: (lineStart.y + lineEnd.y) / 2,
+      };
+    } else {
+      // Original side-by-side connection
+      lineStart = {
+        x: robotsX + robotsR * 0.7,
+        y: robotsY - robotsR * 0.5,
+      };
+      lineEnd = {
+        x: zoomCenterX - zoomRadius - 10 * scale,
+        y: zoomCenterY - zoomRadius * 0.3,
+      };
+      controlPoint = {
+        x: (lineStart.x + lineEnd.x) / 2,
+        y: lineStart.y - 40 * scale,
+      };
+    }
 
     g.append('path')
       .attr(
         'd',
         `M ${lineStart.x} ${lineStart.y} 
-         Q ${(lineStart.x + lineEnd.x) / 2} ${lineStart.y - 40 * scale}
+         Q ${controlPoint.x} ${controlPoint.y}
          ${lineEnd.x} ${lineEnd.y}`,
       )
       .attr('fill', 'none')
@@ -257,12 +302,12 @@ const ResearchVisionChart: React.FC = () => {
       .attr('r', 4)
       .attr('fill', '#5dade2');
 
-    // ===== ZOOM CALLOUT (RIGHT SIDE) =====
+    // ===== ZOOM CALLOUT (RIGHT/BOTTOM SIDE) =====
 
     // Outer ring for zoom callout
     g.append('circle')
-      .attr('cx', zoomX)
-      .attr('cy', zoomY)
+      .attr('cx', zoomCenterX)
+      .attr('cy', zoomCenterY)
       .attr('r', zoomRadius + 8 * scale)
       .attr('fill', 'none')
       .attr('stroke', '#5dade2')
@@ -272,8 +317,8 @@ const ResearchVisionChart: React.FC = () => {
 
     // Robot circle (zoomed)
     g.append('circle')
-      .attr('cx', zoomX)
-      .attr('cy', zoomY)
+      .attr('cx', zoomCenterX)
+      .attr('cy', zoomCenterY)
       .attr('r', zoomRadius)
       .attr('fill', 'rgba(93, 173, 226, 0.85)')
       .attr('stroke', '#2980b9')
@@ -294,8 +339,8 @@ const ResearchVisionChart: React.FC = () => {
 
     // Robot label
     g.append('text')
-      .attr('x', zoomX)
-      .attr('y', zoomY - zoomRadius * 0.55)
+      .attr('x', zoomCenterX)
+      .attr('y', zoomCenterY - zoomRadius * 0.55)
       .attr('text-anchor', 'middle')
       .attr('fill', '#ffffff')
       .attr('font-size', `${20 * scale}px`)
@@ -309,8 +354,8 @@ const ResearchVisionChart: React.FC = () => {
     // Pulsing ring
     const pulseRing = g
       .append('circle')
-      .attr('cx', zoomX)
-      .attr('cy', zoomY)
+      .attr('cx', zoomCenterX)
+      .attr('cy', zoomCenterY)
       .attr('r', humanRadius)
       .attr('fill', 'none')
       .attr('stroke', '#f7dc6f')
@@ -332,8 +377,8 @@ const ResearchVisionChart: React.FC = () => {
     animatePulse();
 
     g.append('circle')
-      .attr('cx', zoomX)
-      .attr('cy', zoomY)
+      .attr('cx', zoomCenterX)
+      .attr('cy', zoomCenterY)
       .attr('r', humanRadius)
       .attr('fill', 'url(#humanGradient)')
       .attr('stroke', '#d4ac0d')
@@ -357,8 +402,8 @@ const ResearchVisionChart: React.FC = () => {
       });
 
     g.append('text')
-      .attr('x', zoomX)
-      .attr('y', zoomY + 4 * scale)
+      .attr('x', zoomCenterX)
+      .attr('y', zoomCenterY + 4 * scale)
       .attr('text-anchor', 'middle')
       .attr('fill', '#1a5276')
       .attr('font-size', `${13 * scale}px`)
@@ -368,8 +413,8 @@ const ResearchVisionChart: React.FC = () => {
 
     // Zoom label
     g.append('text')
-      .attr('x', zoomX)
-      .attr('y', zoomY - zoomRadius - 18 * scale)
+      .attr('x', zoomCenterX)
+      .attr('y', zoomCenterY - zoomRadius - 18 * scale)
       .attr('text-anchor', 'middle')
       .attr('fill', '#5dade2')
       .attr('font-size', `${12 * scale}px`)
@@ -377,7 +422,8 @@ const ResearchVisionChart: React.FC = () => {
       .text('Inside Robot Systems');
 
     // ===== DESCRIPTION LABELS INSIDE PLOT =====
-    const descFontSize = 9 * scale;
+    // Ensure font size is not too small
+    const descFontSize = Math.max(10, 9 * scale);
     const lineHeight = 12 * scale;
 
     // Helper function to draw multi-line description with leader line
@@ -442,56 +488,81 @@ const ResearchVisionChart: React.FC = () => {
     // 45-degree angle multiplier (cos(45°) ≈ 0.707)
     const angle45 = 0.707;
 
-    // Caregiver description - line starts at upper-left 45° of circle
+    // Caregiver description
+    // On mobile, push text further out or in?
+    // Mobile: EcoCenter is width*0.5.
+    // Left side: EcoCenter - 130. If width=350, EcoCenter=175. 175-130=45. OK.
+    const caregiverDescX = isVertical
+      ? ecoCenterX - 130 * scale
+      : ecoCenterX - 150 * scale;
+    const caregiverDescIconX = caregiverX - caregiverR * angle45;
+    const caregiverDescIconY = caregiverY - caregiverR * angle45;
+
+    // Adjust endpoint for mobile to avoid going off-screen
+    const caregiverFinalX = isVertical
+      ? Math.max(60 * scale, caregiverDescX)
+      : caregiverDescX;
+
     drawDescription(
-      caregiverX - caregiverR * angle45,
-      caregiverY - caregiverR * angle45,
-      ecoX - 150 * scale,
-      ecoY - 150 * scale,
+      caregiverDescIconX,
+      caregiverDescIconY,
+      caregiverFinalX,
+      ecoCenterY - 150 * scale,
       ['Human operators', 'guiding robotic systems'],
       '#82e0aa',
       'middle',
     );
 
-    // Robots description - line starts at upper-right 45° of circle
+    // Robots description
+    const robotsDescX = isVertical
+      ? ecoCenterX + 130 * scale
+      : ecoCenterX + 150 * scale;
+    const robotsDescIconX = robotsX + robotsR * angle45;
+    const robotsDescIconY = robotsY - robotsR * angle45;
+
+    // Adjust endpoint for mobile
+    const robotsFinalX = isVertical
+      ? Math.min(width - 60 * scale, robotsDescX)
+      : robotsDescX;
+
     drawDescription(
-      robotsX + robotsR * angle45,
-      robotsY - robotsR * angle45,
-      ecoX + 150 * scale,
-      ecoY - 150 * scale,
+      robotsDescIconX,
+      robotsDescIconY,
+      robotsFinalX,
+      ecoCenterY - 150 * scale,
       ['Autonomous systems for', 'collaborative support'],
       '#5dade2',
       'middle',
     );
 
-    // Care Recipient description - line starts at lower bottom
+    // Care Recipient description
     drawDescription(
       recipientX,
       recipientY + recipientR,
-      ecoX,
-      height - 50 * scale,
+      ecoCenterX,
+      isVertical ? ecoCenterY + 120 * scale : height - 50 * scale, // Adjust Y for mobile
       ['End users benefiting', 'from collaboration'],
       '#eb984e',
       'middle',
     );
 
-    // Human (inside robot) description - line starts at lower-left 45° of Human circle
+    // Human (inside robot) description
     drawDescription(
-      zoomX - humanRadius * angle45,
-      zoomY + humanRadius * angle45,
-      zoomX - 100 * scale,
-      zoomY + zoomRadius + 50 * scale,
+      zoomCenterX - humanRadius * angle45,
+      zoomCenterY + humanRadius * angle45,
+      isVertical ? zoomCenterX - 90 * scale : zoomCenterX - 100 * scale,
+      zoomCenterY + zoomRadius + 50 * scale,
       ['Central to all design', 'Human-centered AI'],
       '#f7dc6f',
       'middle',
     );
 
-    // Robot (zoom view) description - line starts at lower-right 45° of Robot circle
+    // Robot (zoom view) description
     drawDescription(
-      zoomX + zoomRadius * angle45,
-      zoomY + zoomRadius * angle45,
-      zoomX + 100 * scale,
-      zoomY + zoomRadius + 50 * scale,
+      zoomCenterX + zoomRadius * angle45,
+      zoomCenterY + zoomRadius * angle45,
+      isVertical ? zoomCenterX + 90 * scale : zoomCenterX + 100 * scale,
+      zoomCenterY + zoomRadius + 50 * scale,
       ['System designed', 'around human needs'],
       '#5dade2',
       'middle',
@@ -500,7 +571,7 @@ const ResearchVisionChart: React.FC = () => {
 
   return (
     <div ref={containerRef} className='research-vision-chart w-full'>
-      <div className='glass-card p-6 rounded-2xl'>
+      <div className='glass-card rounded-2xl'>
         <svg
           ref={svgRef}
           width={dimensions.width}
