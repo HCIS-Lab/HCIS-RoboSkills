@@ -131,7 +131,7 @@ const Navigation: React.FC<{
             className='w-8 h-8'
           />
           <span className='text-xl font-bold bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent'>
-            RoboSkills
+            HCIS Lab - RoboSkills
           </span>
         </Link>
         <div className='flex items-center gap-4'>
