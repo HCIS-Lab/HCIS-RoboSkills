@@ -168,25 +168,25 @@ const HomePage: React.FC = () => {
 
   return (
     <div className='min-h-screen'>
-      {/* Hero Section */}
-      <div className='relative overflow-hidden bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900'>
+      {/* Top Section: Logo + Research Vision */}
+      <div className='relative overflow-hidden'>
         <div className='absolute inset-0'>
           <div className='orb orb-1' style={{ top: '10%', left: '10%' }} />
           <div className='orb orb-2' style={{ top: '60%', right: '15%' }} />
         </div>
-        <div className='container mx-auto px-4 py-20 md:py-32 relative z-10'>
-          <div className='text-center max-w-4xl mx-auto'>
-            {/* HCIS Lab Logo */}
-            <div className='flex justify-center mb-8'>
+        <div className='container mx-auto px-4 pt-12 pb-8 relative z-10'>
+          {/* HCIS Lab Logo + Title */}
+          <div className='text-center mb-8'>
+            <div className='flex justify-center mb-4'>
               <img
                 src={`${import.meta.env.BASE_URL}hcis-lab-logo-dark.svg`}
                 alt='HCIS Lab Logo'
-                className='h-32 md:h-40 w-auto drop-shadow-2xl animate-fade-in'
+                className='h-20 md:h-28 w-auto drop-shadow-2xl animate-fade-in'
               />
             </div>
             <Title
               level={1}
-              className='!text-5xl md:!text-7xl !mb-6 !font-bold'
+              className='!text-4xl md:!text-5xl !mb-3 !font-bold'
               style={{
                 background: 'linear-gradient(to right, #818cf8, #c084fc)',
                 WebkitBackgroundClip: 'text',
@@ -196,59 +196,62 @@ const HomePage: React.FC = () => {
             >
               {config.hero.title}
             </Title>
-            <Title level={3} className='!text-white/90 !mb-4 !font-normal'>
+            <Paragraph className='!text-white/70 !text-lg !mb-0'>
               {config.hero.subtitle}
-            </Title>
-            <Paragraph className='!text-white/70 !text-lg !mb-8'>
-              {config.hero.description}
             </Paragraph>
-            <Space size='large' wrap>
-              <Link to='/overview'>
-                <Button
-                  type='primary'
-                  size='large'
-                  icon={<RocketOutlined />}
-                  className='shadow-lg hover:shadow-xl'
-                >
-                  Get Started
-                </Button>
-              </Link>
-              {config.lab.website && (
-                <a
-                  href={config.lab.website}
-                  target='_blank'
-                  rel='noopener noreferrer'
-                >
-                  <Button
-                    size='large'
-                    icon={<GlobalOutlined />}
-                    ghost
-                    className='!text-white !border-white/50 hover:!bg-white/10 hover:!border-white'
-                  >
-                    Visit Lab Website
-                  </Button>
-                </a>
-              )}
-            </Space>
           </div>
+
+          {/* Research Vision Chart */}
+          {researchData && (
+            <div className='mb-8'>
+              <ResearchVisionChart />
+            </div>
+          )}
         </div>
       </div>
 
-      {/* Research Vision Section */}
-      {researchData && (
-        <div className='container mx-auto px-4 py-16 bg-transparent'>
-          <div className='text-center mb-8'>
-            <Title level={2} className='!text-white !mb-4'>
-              Research Vision
-            </Title>
-            <Paragraph className='!text-white/60 max-w-2xl mx-auto'>
-              {researchData.lab.philosophy}
-            </Paragraph>
-          </div>
-
-          <ResearchVisionChart />
-        </div>
-      )}
+      {/* About Lab Section */}
+      <div className='container mx-auto px-4 py-12 bg-transparent'>
+        <Card
+          className='backdrop-blur-md border-white/10 shadow-2xl'
+          style={{
+            background: 'rgba(255, 255, 255, 0.03)',
+            borderRadius: '16px',
+          }}
+        >
+          <Title level={2} className='!text-white !mb-4'>
+            About {config.lab.name}
+          </Title>
+          <Title level={4} className='!text-white/80 !mb-2 !font-normal'>
+            {config.lab.fullName}
+          </Title>
+          <Paragraph className='!text-white/70 !text-base !mb-4'>
+            {config.lab.institution}
+          </Paragraph>
+          <Paragraph className='!text-white/80 !text-lg !mb-6'>
+            {config.lab.description}
+          </Paragraph>
+          {config.lab.director && (
+            <div className='bg-white/5 backdrop-blur-sm p-4 rounded-lg border border-white/10'>
+              <Text className='!text-white/60 block mb-1'>Lab Director</Text>
+              <Text className='!text-white text-lg font-semibold block'>
+                {config.lab.director.name}
+              </Text>
+              <Text className='!text-white/70 block'>
+                {config.lab.director.title}
+              </Text>
+              {config.lab.director.email && (
+                <a
+                  href={`mailto:${config.lab.director.email}`}
+                  className='!text-indigo-400 hover:!text-indigo-300 transition-colors'
+                >
+                  {config.lab.director.email}
+                </a>
+              )}
+            </div>
+          )}
+        </Card>
+      </div>
 
       {/* Research Areas Section */}
       {researchData && (
@@ -353,82 +356,6 @@ const HomePage: React.FC = () => {
           </Card>
         </div>
       )}
-
-      {/* About Lab Section */}
-      <div className='container mx-auto px-4 py-12 bg-transparent'>
-        <Card
-          className='backdrop-blur-md border-white/10 shadow-2xl'
-          style={{
-            background: 'rgba(255, 255, 255, 0.03)',
-            borderRadius: '16px',
-          }}
-        >
-          <Title level={2} className='!text-white !mb-4'>
-            About {config.lab.name}
-          </Title>
-          <Title level={4} className='!text-white/80 !mb-2 !font-normal'>
-            {config.lab.fullName}
-          </Title>
-          <Paragraph className='!text-white/70 !text-base !mb-4'>
-            {config.lab.institution}
-          </Paragraph>
-          <Paragraph className='!text-white/80 !text-lg !mb-6'>
-            {config.lab.description}
-          </Paragraph>
-          {config.lab.director && (
-            <div className='bg-white/5 backdrop-blur-sm p-4 rounded-lg border border-white/10'>
-              <Text className='!text-white/60 block mb-1'>Lab Director</Text>
-              <Text className='!text-white text-lg font-semibold block'>
-                {config.lab.director.name}
-              </Text>
-              <Text className='!text-white/70 block'>
-                {config.lab.director.title}
-              </Text>
-              {config.lab.director.email && (
-                <a
-                  href={`mailto:${config.lab.director.email}`}
-                  className='!text-indigo-400 hover:!text-indigo-300 transition-colors'
-                >
-                  {config.lab.director.email}
-                </a>
-              )}
-            </div>
-          )}
-        </Card>
-      </div>
-
-      {/* Features Section */}
-      <div className='container mx-auto px-4 py-12 bg-transparent'>
-        <Title level={2} className='!text-white text-center !mb-8'>
-          Key Features
-        </Title>
-        <Row gutter={[24, 24]}>
-          {config.features.map((feature, index) => (
-            <Col xs={24} md={8} key={index}>
-              <Card
-                className='backdrop-blur-md border-white/10 h-full hover:shadow-xl transition-all duration-300 hover:scale-105'
-                bordered={false}
-                style={{
-                  background: 'rgba(255, 255, 255, 0.03)',
-                  borderRadius: '16px',
-                }}
-              >
-                <div className='text-center'>
-                  <div className='text-5xl mb-4 text-indigo-400'>
-                    {iconMap[feature.icon] || <RocketOutlined />}
-                  </div>
-                  <Title level={4} className='!text-white !mb-3'>
-                    {feature.title}
-                  </Title>
-                  <Paragraph className='!text-white/70'>
-                    {feature.description}
-                  </Paragraph>
-                </div>
-              </Card>
-            </Col>
-          ))}
-        </Row>
-      </div>
 
       {/* Quick Links Section */}
       <div className='container mx-auto px-4 py-12 pb-20 bg-transparent'>

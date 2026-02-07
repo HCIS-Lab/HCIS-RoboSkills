@@ -1,8 +1,8 @@
 {
   "hero": {
-    "title": "RoboSkills",
-    "subtitle": "Robotic Skill Visualization & Analysis Platform",
-    "description": "An interactive, data-driven dashboard for visualizing robotic capabilities, analyzing skill gaps, and managing expertise distribution across Human-Centered Physical AI research."
+    "title": "HCIS - Lab Overview",
+    "subtitle": "A brief overview of HCIS Lab from the perspective of vision, research areas and skills",
+    "description": ""
   },
   "lab": {
     "name": "HCIS Lab",

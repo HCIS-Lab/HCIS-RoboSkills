@@ -2,6 +2,10 @@ import React, { useEffect, useRef, useState } from 'react';
 import * as d3 from 'd3';
 
 // removed props interface
+import { Typography } from 'antd';
+
+const { Title, Paragraph } = Typography;
+
 interface TooltipData {
   label: string;
   description: string;
@@ -27,8 +31,8 @@ const ResearchVisionChart: React.FC = () => {
         // Calculate height based on layout
         // Mobile needs more height for vertical stacking
         const h = isMobile
-          ? Math.max(600, w * 1.6) // Vertical stack needs more height ratio
-          : Math.max(450, w * 0.55); // Desktop aspect ratio
+          ? Math.max(480, w * 2) // Vertical stack needs less height ratio
+          : Math.max(380, w * 0.45); // Desktop aspect ratio
 
         setDimensions({
           width: w,
@@ -54,20 +58,18 @@ const ResearchVisionChart: React.FC = () => {
     // Adjust scale - on mobile we want items to be relatively larger to be readable
     // Desktop base: 800x500. Mobile base: ~400x700
     const baseScale = isVertical
-      ? Math.min(width / 400, height / 800) * 0.85
-      : Math.min(width / 800, height / 500);
+      ? Math.min(width / 400, height / 500) * 0.85
+      : Math.min(width / 800, height / 420);
 
     // Enforce reasonable min/max scale
     const scale = Math.max(0.6, Math.min(1.2, baseScale));
 
-    // Positions based on layout
-    const ecoX = width * 0.5;
     // On desktop, adjust centers to be side-by-side. On mobile, stack them.
     const ecoCenterX = isVertical ? width * 0.5 : width * 0.35;
-    const ecoCenterY = isVertical ? height * 0.25 : height * 0.5;
+    const ecoCenterY = isVertical ? height * 0.2 : height * 0.42;
 
     const zoomCenterX = isVertical ? width * 0.5 : width * 0.72;
-    const zoomCenterY = isVertical ? height * 0.72 : height * 0.5;
+    const zoomCenterY = isVertical ? height * 0.7 : height * 0.42;
 
     const zoomRadius = 100 * scale;
 
@@ -540,7 +542,7 @@ const ResearchVisionChart: React.FC = () => {
       recipientX,
       recipientY + recipientR,
       ecoCenterX,
-      isVertical ? ecoCenterY + 120 * scale : height - 50 * scale, // Adjust Y for mobile
+      ecoCenterY + 160 * scale,
       ['End users benefiting', 'from collaboration'],
       '#eb984e',
       'middle',
@@ -551,7 +553,7 @@ const ResearchVisionChart: React.FC = () => {
       zoomCenterX - humanRadius * angle45,
       zoomCenterY + humanRadius * angle45,
       isVertical ? zoomCenterX - 90 * scale : zoomCenterX - 100 * scale,
-      zoomCenterY + zoomRadius + 50 * scale,
+      zoomCenterY + zoomRadius + 60 * scale,
       ['Central to all design', 'Human-centered AI'],
       '#f7dc6f',
       'middle',
@@ -562,7 +564,7 @@ const ResearchVisionChart: React.FC = () => {
       zoomCenterX + zoomRadius * angle45,
       zoomCenterY + zoomRadius * angle45,
       isVertical ? zoomCenterX + 90 * scale : zoomCenterX + 100 * scale,
-      zoomCenterY + zoomRadius + 50 * scale,
+      zoomCenterY + zoomRadius + 60 * scale,
       ['System designed', 'around human needs'],
       '#5dade2',
       'middle',
@@ -571,7 +573,17 @@ const ResearchVisionChart: React.FC = () => {
 
   return (
     <div ref={containerRef} className='research-vision-chart w-full'>
-      <div className='glass-card rounded-2xl'>
+      <div className='glass-card rounded-2xl p-6'>
+        <div className='text-center mb-2'>
+          <Title level={2} className='!text-white !mb-2'>
+            Research Vision
+          </Title>
+          <Paragraph className='!text-white/60 max-w-2xl mx-auto text-lg'>
+            Developing Human-Centered Physical AI Systems that bridge human
+            needs with autonomous system capabilities
+          </Paragraph>
+        </div>
+
         <svg
           ref={svgRef}
           width={dimensions.width}
@@ -579,37 +591,37 @@ const ResearchVisionChart: React.FC = () => {
           viewBox={`0 0 ${dimensions.width} ${dimensions.height}`}
           className='w-full h-auto'
         />
-      </div>
 
-      {/* Legend */}
-      <div className='flex flex-wrap justify-center gap-5 mt-5 text-sm'>
-        <div className='flex items-center gap-2'>
-          <div
-            className='w-4 h-4 rounded-full'
-            style={{ background: '#f5d76e' }}
-          />
-          <span className='text-white/60'>Environment / Human</span>
-        </div>
-        <div className='flex items-center gap-2'>
-          <div
-            className='w-4 h-4 rounded-full'
-            style={{ background: '#5dade2' }}
-          />
-          <span className='text-white/60'>Robots</span>
-        </div>
-        <div className='flex items-center gap-2'>
-          <div
-            className='w-4 h-4 rounded-full'
-            style={{ background: '#82e0aa' }}
-          />
-          <span className='text-white/60'>Caregiver</span>
-        </div>
-        <div className='flex items-center gap-2'>
-          <div
-            className='w-4 h-4 rounded-full'
-            style={{ background: '#eb984e' }}
-          />
-          <span className='text-white/60'>Care Recipient</span>
+        {/* Legend */}
+        <div className='flex flex-wrap justify-center gap-5 mt-0 text-sm'>
+          <div className='flex items-center gap-2'>
+            <div
+              className='w-4 h-4 rounded-full'
+              style={{ background: '#f5d76e' }}
+            />
+            <span className='text-white/60'>Environment / Human</span>
+          </div>
+          <div className='flex items-center gap-2'>
+            <div
+              className='w-4 h-4 rounded-full'
+              style={{ background: '#5dade2' }}
+            />
+            <span className='text-white/60'>Robots</span>
+          </div>
+          <div className='flex items-center gap-2'>
+            <div
+              className='w-4 h-4 rounded-full'
+              style={{ background: '#82e0aa' }}
+            />
+            <span className='text-white/60'>Caregiver</span>
+          </div>
+          <div className='flex items-center gap-2'>
+            <div
+              className='w-4 h-4 rounded-full'
+              style={{ background: '#eb984e' }}
+            />
+            <span className='text-white/60'>Care Recipient</span>
+          </div>
         </div>
       </div>
 
