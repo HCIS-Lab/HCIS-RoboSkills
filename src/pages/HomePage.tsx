@@ -1,15 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import {
-  Card,
-  Row,
-  Col,
-  Button,
-  Typography,
-  Statistic,
-  Space,
-  Spin,
-} from 'antd';
+import { Card, Row, Col, Typography, Statistic, Space, Spin } from 'antd';
 import {
   TeamOutlined,
   SearchOutlined,
@@ -322,7 +313,7 @@ const HomePage: React.FC = () => {
                 <Statistic
                   title={<span className='text-white/70'>Team Members</span>}
                   value={stats.members}
-                  valueStyle={{ color: '#818cf8', fontSize: '2.5rem' }}
+                  styles={{ content: { color: '#818cf8', fontSize: '2.5rem' } }}
                   prefix={<TeamOutlined />}
                 />
               </Col>
@@ -330,7 +321,7 @@ const HomePage: React.FC = () => {
                 <Statistic
                   title={<span className='text-white/70'>Skills Tracked</span>}
                   value={stats.skills}
-                  valueStyle={{ color: '#c084fc', fontSize: '2.5rem' }}
+                  styles={{ content: { color: '#c084fc', fontSize: '2.5rem' } }}
                   prefix={<RocketOutlined />}
                 />
               </Col>
@@ -338,7 +329,7 @@ const HomePage: React.FC = () => {
                 <Statistic
                   title={<span className='text-white/70'>Categories</span>}
                   value={stats.categories}
-                  valueStyle={{ color: '#a78bfa', fontSize: '2.5rem' }}
+                  styles={{ content: { color: '#a78bfa', fontSize: '2.5rem' } }}
                   prefix={<SearchOutlined />}
                 />
               </Col>
@@ -348,7 +339,9 @@ const HomePage: React.FC = () => {
                     title={<span className='text-white/70'>{stat.title}</span>}
                     value={stat.value}
                     suffix={stat.suffix}
-                    valueStyle={{ color: '#818cf8', fontSize: '2.5rem' }}
+                    styles={{
+                      content: { color: '#818cf8', fontSize: '2.5rem' },
+                    }}
                   />
                 </Col>
               ))}
@@ -368,7 +361,7 @@ const HomePage: React.FC = () => {
               <Link to={link.link}>
                 <Card
                   className='backdrop-blur-md border-white/10 h-full hover:shadow-xl transition-all duration-300 hover:scale-105 cursor-pointer'
-                  bordered={false}
+                  variant='borderless'
                   style={{
                     background: 'rgba(255, 255, 255, 0.03)',
                     borderRadius: '16px',
