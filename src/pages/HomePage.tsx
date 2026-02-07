@@ -9,8 +9,6 @@ import {
   Statistic,
   Space,
   Spin,
-  Tag,
-  Tooltip,
 } from 'antd';
 import {
   TeamOutlined,
@@ -21,9 +19,6 @@ import {
   RocketOutlined,
   CarOutlined,
   RobotOutlined,
-  FileTextOutlined,
-  CalendarOutlined,
-  LinkOutlined,
   RightOutlined,
 } from '@ant-design/icons';
 import ResearchVisionChart from '../components/ResearchVisionChart';
@@ -79,43 +74,13 @@ interface SkillsData {
   }>;
 }
 
-interface Publication {
-  title: string;
-  venue: string;
-  authors: string[];
-  links: {
-    paper?: string;
-    projectPage?: string;
-    code?: string;
-    ieee?: string;
-    nvidia?: string;
-  };
-}
-
-interface FocusArea {
-  id: string;
-  name: string;
-  description: string;
-}
-
 interface ResearchArea {
   id: string;
   name: string;
   description: string;
   color: string;
   icon: string;
-  focusAreas: FocusArea[];
-  publications: Publication[];
-}
-
-interface NewsItem {
-  date: string;
-  text: string;
-  highlight?: boolean;
-  links?: {
-    paper?: string;
-    website?: string;
-  };
+  url: string;
 }
 
 interface ResearchData {
@@ -125,7 +90,6 @@ interface ResearchData {
     philosophy: string;
   };
   researchAreas: ResearchArea[];
-  recentNews: NewsItem[];
 }
 
 const iconMap: Record<string, React.ReactNode> = {
@@ -337,184 +301,23 @@ const HomePage: React.FC = () => {
                     {area.description}
                   </Paragraph>
 
-                  {/* Focus Areas */}
-                  <div className='mb-6'>
-                    <Text strong className='text-white/80 block mb-3'>
-                      Focus Areas:
-                    </Text>
-                    <div className='space-y-3'>
-                      {area.focusAreas.map((focus) => (
-                        <div
-                          key={focus.id}
-                          className='p-3 rounded-lg bg-white/5 hover:bg-white/10 transition-all'
-                        >
-                          <Text strong className='text-white block mb-1'>
-                            {focus.name}
-                          </Text>
-                          <Text className='text-white/60 text-sm'>
-                            {focus.description}
-                          </Text>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Recent Publications */}
-                  <div>
-                    <Text strong className='text-white/80 block mb-3'>
-                      Selected Publications:
-                    </Text>
-                    <div className='space-y-3'>
-                      {area.publications.slice(0, 3).map((pub, idx) => (
-                        <div
-                          key={idx}
-                          className='p-3 rounded-lg bg-white/5 hover:bg-white/10 transition-all'
-                        >
-                          <div className='flex items-start justify-between gap-2'>
-                            <div className='flex-1'>
-                              <Text className='text-white text-sm block mb-1'>
-                                {pub.title}
-                              </Text>
-                              <Tag color={area.color} className='text-xs mb-2'>
-                                {pub.venue}
-                              </Tag>
-                            </div>
-                          </div>
-                          <div className='flex flex-wrap gap-2 mt-2'>
-                            {pub.links.paper && (
-                              <Tooltip title='Paper'>
-                                <a
-                                  href={pub.links.paper}
-                                  target='_blank'
-                                  rel='noopener noreferrer'
-                                  className='text-white/60 hover:text-white transition-colors'
-                                >
-                                  <FileTextOutlined className='text-lg' />
-                                </a>
-                              </Tooltip>
-                            )}
-                            {pub.links.projectPage && (
-                              <Tooltip title='Project Page'>
-                                <a
-                                  href={pub.links.projectPage}
-                                  target='_blank'
-                                  rel='noopener noreferrer'
-                                  className='text-white/60 hover:text-white transition-colors'
-                                >
-                                  <GlobalOutlined className='text-lg' />
-                                </a>
-                              </Tooltip>
-                            )}
-                            {pub.links.code && (
-                              <Tooltip title='Code'>
-                                <a
-                                  href={pub.links.code}
-                                  target='_blank'
-                                  rel='noopener noreferrer'
-                                  className='text-white/60 hover:text-white transition-colors'
-                                >
-                                  <GithubOutlined className='text-lg' />
-                                </a>
-                              </Tooltip>
-                            )}
-                            {pub.links.ieee && (
-                              <Tooltip title='IEEE'>
-                                <a
-                                  href={pub.links.ieee}
-                                  target='_blank'
-                                  rel='noopener noreferrer'
-                                  className='text-white/60 hover:text-white transition-colors'
-                                >
-                                  <LinkOutlined className='text-lg' />
-                                </a>
-                              </Tooltip>
-                            )}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
+                  <div className='mt-6'>
+                    {area.url && (
+                      <a
+                        href={area.url}
+                        target='_blank'
+                        rel='noopener noreferrer'
+                        className='inline-flex items-center gap-2 text-white hover:text-indigo-300 transition-colors group'
+                      >
+                        <span className='font-medium'>Learn More</span>
+                        <RightOutlined className='group-hover:translate-x-1 transition-transform' />
+                      </a>
+                    )}
                   </div>
                 </Card>
               </Col>
             ))}
           </Row>
-        </div>
-      )}
-
-      {/* Recent News Section */}
-      {researchData && researchData.recentNews.length > 0 && (
-        <div className='container mx-auto px-4 py-12 bg-transparent'>
-          <Title level={2} className='!text-white text-center !mb-8'>
-            Recent News & Updates
-          </Title>
-
-          <Card className='glass-card'>
-            <div className='space-y-4'>
-              {researchData.recentNews.slice(0, 8).map((news, idx) => (
-                <div
-                  key={idx}
-                  className={`flex items-start gap-4 p-4 rounded-lg transition-all ${
-                    news.highlight
-                      ? 'bg-indigo-500/10 border border-indigo-500/30'
-                      : 'bg-white/5 hover:bg-white/10'
-                  }`}
-                >
-                  <div className='flex-shrink-0'>
-                    <Tag
-                      color={news.highlight ? 'gold' : 'default'}
-                      icon={<CalendarOutlined />}
-                    >
-                      {news.date}
-                    </Tag>
-                  </div>
-                  <div className='flex-1'>
-                    <Text className='text-white'>{news.text}</Text>
-                    {news.links && (
-                      <div className='flex gap-3 mt-2'>
-                        {news.links.paper && (
-                          <a
-                            href={news.links.paper}
-                            target='_blank'
-                            rel='noopener noreferrer'
-                            className='text-indigo-400 hover:text-indigo-300 text-sm flex items-center gap-1'
-                          >
-                            <FileTextOutlined /> Paper
-                          </a>
-                        )}
-                        {news.links.website && (
-                          <a
-                            href={news.links.website}
-                            target='_blank'
-                            rel='noopener noreferrer'
-                            className='text-indigo-400 hover:text-indigo-300 text-sm flex items-center gap-1'
-                          >
-                            <GlobalOutlined /> Website
-                          </a>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                  {news.highlight && (
-                    <div className='flex-shrink-0'>
-                      <Tag color='gold'>NEW</Tag>
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-
-            <div className='text-center mt-6'>
-              <Button
-                type='link'
-                href='https://sites.google.com/site/yitingchen0524/home'
-                target='_blank'
-                icon={<RightOutlined />}
-                className='text-indigo-400'
-              >
-                View All News
-              </Button>
-            </div>
-          </Card>
         </div>
       )}
 

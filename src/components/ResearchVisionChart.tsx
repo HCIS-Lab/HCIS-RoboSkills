@@ -478,10 +478,10 @@ const ResearchVisionChart: React.FC<ResearchVisionChartProps> = ({
       'middle',
     );
 
-    // Care Recipient description - line starts at lower-left 45° of circle
+    // Care Recipient description - line starts at lower bottom
     drawDescription(
-      recipientX - recipientR * angle45,
-      recipientY + recipientR * angle45,
+      recipientX,
+      recipientY + recipientR,
       ecoX,
       height - 50 * scale,
       ['End users benefiting', 'from collaboration'],
