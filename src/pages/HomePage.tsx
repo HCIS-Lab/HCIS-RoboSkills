@@ -11,6 +11,7 @@ import {
   CarOutlined,
   RobotOutlined,
   RightOutlined,
+  UserOutlined,
   EyeOutlined,
   BulbOutlined,
   SafetyCertificateOutlined,
@@ -75,6 +76,7 @@ interface HomeConfig {
       name: string;
       title: string;
       email?: string;
+      avatar?: string;
     };
   };
   features: Array<{
@@ -432,22 +434,45 @@ const HomePage: React.FC = () => {
             {config.lab.description}
           </Paragraph>
           {config.lab.director && (
-            <div className='bg-white/5 backdrop-blur-sm p-4 rounded-lg border border-white/10'>
-              <Text className='!text-white/60 block mb-1'>Lab Director</Text>
-              <Text className='!text-white text-lg font-semibold block'>
-                {config.lab.director.name}
-              </Text>
-              <Text className='!text-white/70 block'>
-                {config.lab.director.title}
-              </Text>
-              {config.lab.director.email && (
-                <a
-                  href={`mailto:${config.lab.director.email}`}
-                  className='!text-indigo-400 hover:!text-indigo-300 transition-colors'
-                >
-                  {config.lab.director.email}
-                </a>
-              )}
+            <div className='bg-white/5 backdrop-blur-sm p-4 rounded-lg border border-white/10 flex items-center gap-5'>
+              {/* Director avatar */}
+              <div
+                className='w-20 h-20 md:w-24 md:h-24 rounded-full overflow-hidden flex-shrink-0 border-2 border-indigo-400/30'
+                style={{ background: 'rgba(99, 102, 241, 0.1)' }}
+              >
+                {config.lab.director.avatar ? (
+                  <img
+                    src={
+                      config.lab.director.avatar.startsWith('http')
+                        ? config.lab.director.avatar
+                        : `${import.meta.env.BASE_URL}${config.lab.director.avatar.replace(/^\//, '')}`
+                    }
+                    alt={config.lab.director.name}
+                    className='w-full h-full object-cover'
+                  />
+                ) : (
+                  <div className='w-full h-full flex items-center justify-center text-3xl text-indigo-400/60'>
+                    <UserOutlined />
+                  </div>
+                )}
+              </div>
+              <div>
+                <Text className='!text-white/60 block mb-1'>Lab Director</Text>
+                <Text className='!text-white text-lg font-semibold block'>
+                  {config.lab.director.name}
+                </Text>
+                <Text className='!text-white/70 block'>
+                  {config.lab.director.title}
+                </Text>
+                {config.lab.director.email && (
+                  <a
+                    href={`mailto:${config.lab.director.email}`}
+                    className='!text-indigo-400 hover:!text-indigo-300 transition-colors'
+                  >
+                    {config.lab.director.email}
+                  </a>
+                )}
+              </div>
             </div>
           )}
         </Card>
