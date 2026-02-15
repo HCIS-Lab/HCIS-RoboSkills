@@ -593,9 +593,9 @@ const SkillChart: React.FC<SkillChartProps> = React.memo(
         .forceSimulation<SkillNode>(nodes)
         .force(
           'collide',
-          d3.forceCollide<SkillNode>((d) => d.r + 2).iterations(2), // Tight packing
+          d3.forceCollide<SkillNode>((d) => d.r + 5).iterations(2), // Increased gap (was +2)
         )
-        .force('charge', d3.forceManyBody().strength(-20)); // prevent overlap glitch
+        .force('charge', d3.forceManyBody().strength(-30)); // Stronger repulsion (was -20)
 
       // Custom force to pull skills to their dynamic group center
       const forceClumpToGroup = (alpha: number) => {
@@ -603,7 +603,8 @@ const SkillChart: React.FC<SkillChartProps> = React.memo(
           const group = groups.find((g) => g.id === d.groupId);
           if (group) {
             // k determines how tight the cluster is. stronger k = tighter.
-            const k = 0.1 * alpha;
+            // Moderate strength to keep them grouped but not too tight (was 0.01)
+            const k = 0.05 * alpha;
             d.vx! += (group.x! - d.x!) * k;
             d.vy! += (group.y! - d.y!) * k;
           }
@@ -622,7 +623,8 @@ const SkillChart: React.FC<SkillChartProps> = React.memo(
             if (isMember) {
               // Stay INSIDE: If dist > radius, push IN
               if (dist > circle.radius - d.r) {
-                const k = (dist - (circle.radius - d.r)) * 0.1 * alpha;
+                // Increased strength to act as a firm wall (was 0.1)
+                const k = (dist - (circle.radius - d.r)) * 0.3 * alpha;
                 d.vx! -= (dx / dist) * k;
                 d.vy! -= (dy / dist) * k;
               }
