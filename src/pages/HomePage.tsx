@@ -330,14 +330,9 @@ const HomePage: React.FC = () => {
             border: '1px solid rgba(129, 140, 248, 0.15)',
           }}
         >
-          <Text className='!text-white/40 uppercase tracking-widest text-xs font-semibold block mb-3'>
+          <Title level={2} className='!text-white !mb-0'>
             What is Physical AI?
-          </Text>
-          <Paragraph className='!text-white/50 !text-sm !mb-4 max-w-3xl mx-auto'>
-            The evolution of AI — from perception to generation to agency — now
-            enters a new era where AI systems understand and interact with the
-            physical world.
-          </Paragraph>
+          </Title>
           <PhysicalAIEvolutionChart />
           <Paragraph className='!text-white/80 !text-base md:!text-lg !mb-0 max-w-4xl mx-auto italic mt-5'>
             "Physical AI refers to the use of AI techniques to enable systems to
