@@ -114,7 +114,8 @@ interface ResearchArea {
   description: string;
   color: string;
   icon: string;
-  url: string;
+  url?: string;
+  image?: string;
 }
 
 interface Pillar {
@@ -470,6 +471,23 @@ const HomePage: React.FC = () => {
                     className='glass-card h-full'
                     style={{ borderTop: `4px solid ${area.color}` }}
                   >
+                    {/* Image area - fixed height for alignment */}
+                    {area.image && (
+                      <div
+                        className='img-placeholder mb-4 overflow-hidden'
+                        style={{ height: '200px' }}
+                      >
+                        <img
+                          src={
+                            area.image.startsWith('http')
+                              ? area.image
+                              : `${import.meta.env.BASE_URL}${area.image.replace(/^\//, '')}`
+                          }
+                          alt={area.name}
+                          className='w-full h-full object-cover rounded-xl'
+                        />
+                      </div>
+                    )}
                     <div className='flex items-center gap-3 mb-4'>
                       <div
                         className='text-2xl p-3 rounded-xl'

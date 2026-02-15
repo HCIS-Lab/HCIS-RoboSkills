@@ -75,7 +75,8 @@
       "description": "Developing intelligent systems that understand driving scenes, assess risks, and enable safer autonomous driving through human-centric design principles.",
       "color": "#5dade2",
       "icon": "car",
-      "url": "https://sites.google.com/site/yitingchen0524/research/intelligent-driving-systems"
+      "url": "https://sites.google.com/site/yitingchen0524/research/intelligent-driving-systems",
+      "image": "/intelligent-driving.png"
     },
     {
       "id": "assistive-robotics",
@@ -83,7 +84,8 @@
       "description": "Creating robots that assist humans in daily tasks through intelligent perception, manipulation, and human-robot interaction.",
       "color": "#eb984e",
       "icon": "robot",
-      "url": "https://sites.google.com/site/yitingchen0524/research/assistive-robotics"
+      "url": "https://sites.google.com/site/yitingchen0524/research/assistive-robotics",
+      "image": "/assistive-robotics.png"
     }
   ],
   "featuredResearch": [
