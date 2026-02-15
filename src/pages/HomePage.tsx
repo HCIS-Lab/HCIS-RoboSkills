@@ -324,8 +324,11 @@ const HomePage: React.FC = () => {
       {/* Physical AI Definition Banner */}
       <div className='container mx-auto px-4 py-8 bg-transparent'>
         <div
-          className='reveal shimmer-border rounded-2xl px-6 py-5 md:px-10 md:py-6 text-center'
-          style={{ background: 'rgba(99, 102, 241, 0.06)' }}
+          className='reveal rounded-2xl px-6 py-5 md:px-10 md:py-6 text-center'
+          style={{
+            background: 'rgba(99, 102, 241, 0.06)',
+            border: '1px solid rgba(129, 140, 248, 0.15)',
+          }}
         >
           <Text className='!text-white/40 uppercase tracking-widest text-xs font-semibold block mb-3'>
             What is Physical AI?

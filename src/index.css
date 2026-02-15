@@ -491,46 +491,6 @@ body {
   transition-delay: 600ms;
 }
 
-/* Shimmer effect for definition banner */
-@keyframes shimmer {
-  0% {
-    background-position: -200% center;
-  }
-  100% {
-    background-position: 200% center;
-  }
-}
-
-.shimmer-border {
-  position: relative;
-  overflow: hidden;
-}
-
-.shimmer-border::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  padding: 1px;
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    rgba(129, 140, 248, 0.4) 50%,
-    transparent 100%
-  );
-  background-size: 200% 100%;
-  animation: shimmer 4s ease-in-out infinite;
-  mask:
-    linear-gradient(#fff 0 0) content-box,
-    linear-gradient(#fff 0 0);
-  mask-composite: exclude;
-  -webkit-mask:
-    linear-gradient(#fff 0 0) content-box,
-    linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-  pointer-events: none;
-}
-
 /* Image placeholder */
 .img-placeholder {
   background: linear-gradient(
@@ -558,21 +518,4 @@ body {
     rgba(168, 85, 247, 0.15) 50%,
     rgba(99, 102, 241, 0.2) 100%
   );
-}
-
-/* Connecting dots animation for pillar section */
-@keyframes pulseDot {
-  0%,
-  100% {
-    opacity: 0.3;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 0.8;
-    transform: scale(1.3);
-  }
-}
-
-.pulse-dot {
-  animation: pulseDot 2s ease-in-out infinite;
 }
