@@ -27,6 +27,7 @@ import {
   CalendarOutlined,
 } from '@ant-design/icons';
 import ResearchVisionChart from '../components/ResearchVisionChart';
+import PhysicalAIEvolutionChart from '../components/PhysicalAIEvolutionChart';
 
 const { Title, Paragraph, Text } = Typography;
 
@@ -329,7 +330,13 @@ const HomePage: React.FC = () => {
           <Text className='!text-white/40 uppercase tracking-widest text-xs font-semibold block mb-3'>
             What is Physical AI?
           </Text>
-          <Paragraph className='!text-white/80 !text-base md:!text-lg !mb-0 max-w-4xl mx-auto italic'>
+          <Paragraph className='!text-white/50 !text-sm !mb-4 max-w-3xl mx-auto'>
+            The evolution of AI — from perception to generation to agency — now
+            enters a new era where AI systems understand and interact with the
+            physical world.
+          </Paragraph>
+          <PhysicalAIEvolutionChart />
+          <Paragraph className='!text-white/80 !text-base md:!text-lg !mb-0 max-w-4xl mx-auto italic mt-5'>
             "Physical AI refers to the use of AI techniques to enable systems to
             perceive, reason, and act in the physical world — by observing it
             through sensors and interacting with it through actuators."
