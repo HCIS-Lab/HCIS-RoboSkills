@@ -360,38 +360,43 @@ const HomePage: React.FC = () => {
           </div>
 
           {/* 5 Pillars */}
-          <Row gutter={[16, 16]} justify='center'>
+          <div className='flex flex-wrap justify-center gap-4'>
             {researchData.pillars.map((pillar, idx) => (
-              <Col xs={24} sm={12} md={8} lg={4} key={pillar.id}>
-                <div className={`reveal delay-${(idx + 1) * 100}`}>
-                  <Card
-                    className='backdrop-blur-md border-white/10 h-full text-center hover:shadow-xl transition-all duration-300 hover:scale-105 hover:-translate-y-1'
+              <div
+                key={pillar.id}
+                className={`reveal delay-${(idx + 1) * 100} flex-1 min-w-[160px] max-w-[220px]`}
+              >
+                <Card
+                  className='backdrop-blur-md border-white/10 h-full text-center hover:shadow-xl transition-all duration-300 hover:scale-105 hover:-translate-y-1'
+                  style={{
+                    background: 'rgba(255, 255, 255, 0.03)',
+                    borderRadius: '16px',
+                    borderTop: `3px solid ${pillar.color}`,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'flex-start',
+                  }}
+                >
+                  <div
+                    className='text-3xl mb-3 inline-flex items-center justify-center w-14 h-14 rounded-xl'
                     style={{
-                      background: 'rgba(255, 255, 255, 0.03)',
-                      borderRadius: '16px',
-                      borderTop: `3px solid ${pillar.color}`,
+                      background: `${pillar.color}20`,
+                      color: pillar.color,
                     }}
                   >
-                    <div
-                      className='text-3xl mb-3 inline-flex items-center justify-center w-14 h-14 rounded-xl'
-                      style={{
-                        background: `${pillar.color}20`,
-                        color: pillar.color,
-                      }}
-                    >
-                      {pillarIconMap[pillar.icon] || <GlobalOutlined />}
-                    </div>
-                    <Title level={5} className='!text-white !mb-1'>
-                      {pillar.shortName}
-                    </Title>
-                    <Paragraph className='!text-white/50 !mb-0 !text-xs'>
-                      {pillar.description}
-                    </Paragraph>
-                  </Card>
-                </div>
-              </Col>
+                    {pillarIconMap[pillar.icon] || <GlobalOutlined />}
+                  </div>
+                  <Title level={5} className='!text-white !mb-1'>
+                    {pillar.shortName}
+                  </Title>
+                  <Paragraph className='!text-white/50 !mb-0 !text-xs'>
+                    {pillar.description}
+                  </Paragraph>
+                </Card>
+              </div>
             ))}
-          </Row>
+          </div>
 
           {/* 4 Outcomes */}
           {researchData.outcomes && (
