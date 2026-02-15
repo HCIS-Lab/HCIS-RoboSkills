@@ -85,5 +85,67 @@
       "icon": "robot",
       "url": "https://sites.google.com/site/yitingchen0524/research/assistive-robotics"
     }
+  ],
+  "featuredResearch": [
+    {
+      "id": "scone",
+      "title": "SCONE",
+      "subtitle": "A Food Scooping Robot Learning Framework with Active Perception",
+      "venue": "CoRL 2023",
+      "description": "A behavior cloning framework using kinesthetic teaching and active perception for food acquisition tasks.",
+      "authors": "Tai, Chao, and Chen",
+      "link": "https://sites.google.com/view/corlscone",
+      "image": "https://lh3.googleusercontent.com/sitesv/APaQ0STxN6jd1N73Uid74MemvlN4E4qbptOQ4wxtZ-awbz6QyZjLFDtH9svTXCci1TVkJtDdYEWcpW9-j_3t1VwkdposdiEqBkA9Yu8KyqIppl7bP_32G_LlLSLMza1z6hPiOzMqSuyH4Vm7uWM3Rabg5cgcvscler2AGzuSyA5LptR9vVce4T_E2Mts59Q=w1280",
+      "color": "#60A5FA"
+    },
+    {
+      "id": "grits",
+      "title": "GRITS",
+      "subtitle": "A Spillage-Aware Guided Diffusion Policy for Robot Food Scooping Tasks",
+      "venue": "ICRA 2026",
+      "description": "A guided diffusion policy that effectively avoids risky spillage scenarios and generalizes to unseen food items with varying quantities and distributions.",
+      "authors": "Tai, Yang, Yu, Chao, and Chen",
+      "link": "https://sites.google.com/site/yitingchen0524/research/assistive-robotics",
+      "image": "https://lh3.googleusercontent.com/sitesv/APaQ0SSWdtpi7IX_wnA94uWi36T-mK7rtEzfhRvnJwR36mh7uIIheysIavRpuMiRX_NRcHHk4b2G2h9VYzIBT8LCeiNxv58lNPJYUcI32M30U14lOFSRX2i7Glfu1OejZI4DE2nTqy0VcZYPL4kfMj6XGi8y80kiLLk2O_HJOd7Q6tZarDjsKe_u4YRqCRDgDNHAGD5Gjp5MLtbVg8wvhwAlrSBEev6sxCvaX-l7h20=w1280",
+      "color": "#A78BFA"
+    }
+  ],
+  "talentPrograms": [
+    {
+      "id": "ai-camp",
+      "title": "Fun AI Camp",
+      "description": "Hands-on AI and robotics workshops introducing students to Physical AI concepts through interactive projects.",
+      "season": "Winter 2024",
+      "link": "https://mislab.cs.nthu.edu.tw/explorecsr-5/index.html",
+      "image": "/fun-ai-camp-2026.png",
+      "icon": "ExperimentOutlined"
+    },
+    {
+      "id": "wildbot",
+      "title": "WildBot Competition",
+      "description": "A robotics competition challenging teams to build autonomous mobile manipulation systems in real-world scenarios.",
+      "season": "2025",
+      "link": "https://wildbot-competition.com",
+      "image": "https://wildbot-competition.com/_next/image?url=%2Fassets%2Fhero_robot_car.png&w=1920&q=75",
+      "icon": "TrophyOutlined"
+    },
+    {
+      "id": "co-teaching",
+      "title": "Cross-University Co-Teaching",
+      "description": "Collaborative teaching program bringing together faculty and students from multiple universities for robot learning.",
+      "season": "Summer 2025",
+      "link": "https://mochiwebservice.ngrok.app/PTWAcls",
+      "image": "/co-teaching.png",
+      "icon": "BankOutlined"
+    },
+    {
+      "id": "physical-ai-course",
+      "title": "Physical AI @ NYCU CS",
+      "description": "Design, prototype, and present a Physical AI solution that demonstrates integration of sensing, reasoning, and action.",
+      "season": "Fall 2025",
+      "link": "",
+      "image": "/physical-ai-course.png",
+      "icon": "BookOutlined"
+    }
   ]
 }
