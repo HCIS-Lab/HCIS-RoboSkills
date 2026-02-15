@@ -434,7 +434,7 @@ const HomePage: React.FC = () => {
             {config.lab.description}
           </Paragraph>
           {config.lab.director && (
-            <div className='bg-white/5 backdrop-blur-sm p-4 rounded-lg border border-white/10 flex items-center gap-5'>
+            <div className='bg-white/5 backdrop-blur-sm p-4 rounded-lg border border-white/10 flex flex-col md:flex-row items-center gap-4 md:gap-5'>
               {/* Director avatar */}
               <div
                 className='w-20 h-20 md:w-24 md:h-24 rounded-full overflow-hidden flex-shrink-0 border-2 border-indigo-400/30'
@@ -456,7 +456,7 @@ const HomePage: React.FC = () => {
                   </div>
                 )}
               </div>
-              <div>
+              <div className='text-center md:text-left min-w-0'>
                 <Text className='!text-white/60 block mb-1'>Lab Director</Text>
                 <Text className='!text-white text-lg font-semibold block'>
                   {config.lab.director.name}
