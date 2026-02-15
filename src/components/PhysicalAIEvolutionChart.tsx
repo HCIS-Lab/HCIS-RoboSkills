@@ -45,17 +45,6 @@ const PhysicalAIEvolutionChart: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const animationRef = useRef<number>(0);
   const [dimensions, setDimensions] = useState({ width: 800, height: 450 });
-  const particlesRef = useRef<
-    Array<{
-      x: number;
-      y: number;
-      vx: number;
-      vy: number;
-      life: number;
-      maxLife: number;
-      size: number;
-    }>
-  >([]);
 
   // Responsive sizing
   useEffect(() => {
@@ -114,22 +103,6 @@ const PhysicalAIEvolutionChart: React.FC = () => {
       curvePoints.push({ x: curveX(t), y: curveY(t) });
     }
 
-    // Spawn particles along the curve
-    const spawnParticle = (maxT: number) => {
-      const t = Math.random() * maxT;
-      const px = curveX(t);
-      const py = curveY(t);
-      particlesRef.current.push({
-        x: px,
-        y: py,
-        vx: (Math.random() - 0.5) * 0.5,
-        vy: -Math.random() * 1.5 - 0.5,
-        life: 0,
-        maxLife: 40 + Math.random() * 60,
-        size: Math.random() * 2 + 0.5,
-      });
-    };
-
     let frameCount = 0;
     const animDuration = 120; // frames (~2 seconds at 60fps)
 
@@ -147,15 +120,6 @@ const PhysicalAIEvolutionChart: React.FC = () => {
 
       // How many curve points to draw
       const visiblePoints = Math.floor(progress * curvePoints.length);
-
-      // Spawn particles only after some progress, limited to drawn area
-      if (
-        frameCount % 3 === 0 &&
-        particlesRef.current.length < 80 &&
-        progress > 0.2
-      ) {
-        spawnParticle(progress);
-      }
 
       // Background subtle grid
       ctx.strokeStyle = 'rgba(255, 255, 255, 0.03)';
@@ -400,24 +364,10 @@ const PhysicalAIEvolutionChart: React.FC = () => {
       ctx.textAlign = 'left';
       ctx.fillText('2012 ALEXNET', originX - 10, originY + 20);
 
-      // Update and draw particles
-      particlesRef.current = particlesRef.current.filter((p) => {
-        p.life++;
-        p.x += p.vx;
-        p.y += p.vy;
-
-        if (p.life >= p.maxLife) return false;
-
-        const alpha = 1 - p.life / p.maxLife;
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.size * alpha, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(132, 204, 22, ${alpha * 0.4})`;
-        ctx.fill();
-
-        return true;
-      });
-
-      animationRef.current = requestAnimationFrame(draw);
+      // Keep animating only during the draw-in; stop once done
+      if (!animDone) {
+        animationRef.current = requestAnimationFrame(draw);
+      }
     };
 
     draw();
