@@ -63,8 +63,8 @@ const PhysicalAIEvolutionChart: React.FC = () => {
 
     const isMobile = width < 640;
     const height = isMobile
-      ? Math.max(520, width * 0.95)
-      : Math.max(520, Math.min(620, width * 0.55));
+      ? Math.max(420, width * 0.85)
+      : Math.max(400, Math.min(480, width * 0.42));
 
     const dpr = window.devicePixelRatio || 1;
     canvas.width = width * dpr;
@@ -73,10 +73,10 @@ const PhysicalAIEvolutionChart: React.FC = () => {
     canvas.style.height = `${height}px`;
 
     // Padding
-    const padLeft = isMobile ? 30 : 60;
-    const padRight = isMobile ? 40 : 80;
-    const padTop = isMobile ? 50 : 70;
-    const padBottom = isMobile ? 80 : 90;
+    const padLeft = isMobile ? 30 : 50;
+    const padRight = isMobile ? 40 : 60;
+    const padTop = isMobile ? 40 : 50;
+    const padBottom = isMobile ? 60 : 60;
 
     const plotW = width - padLeft - padRight;
     const plotH = height - padTop - padBottom;
