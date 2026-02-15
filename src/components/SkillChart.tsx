@@ -145,13 +145,15 @@ const SkillChart: React.FC<SkillChartProps> = React.memo(
         memberList.some((m) => m.skills.some((s) => s.skillId === skill.id)),
       );
 
-      // Count skills per intersection
-      const intersectionCounts: Record<string, number> = {};
-
-      skillList.forEach((skill) => {
-        // Sort to ensure "A,B" is same as "B,A"
-        const setKey = skill.belongsTo.slice().sort().join(',');
-        intersectionCounts[setKey] = (intersectionCounts[setKey] || 0) + 1;
+      // Pre-calculate people count per skill for weighting
+      const skillPeopleCounts = new Map<string, number>();
+      memberList.forEach((m) => {
+        m.skills.forEach((s) => {
+          skillPeopleCounts.set(
+            s.skillId,
+            (skillPeopleCounts.get(s.skillId) || 0) + 1,
+          );
+        });
       });
 
       // Generate Area[] for d3-venn
@@ -168,23 +170,32 @@ const SkillChart: React.FC<SkillChartProps> = React.memo(
       };
 
       skillList.forEach((skill) => {
+        const peopleCount = skillPeopleCounts.get(skill.id) || 0;
+        // Estimate radius consistent with visual rendering
+        // Radius r ~ sqrt(people) * 5 + 5
+        const r = Math.max(1, Math.sqrt(peopleCount) * 5 + 5);
+        // Area = pi * r^2
+        const areaWeight = Math.PI * r * r;
+
         const subsets = getSubsets(skill.belongsTo);
         subsets.forEach((subset) => {
           if (subset.length === 0) return;
           const key = subset.sort().join(',');
-          setSizes[key] = (setSizes[key] || 0) + 1;
+          // Sum up area weights instead of simple counts to ensure
+          // categories with physically large skills get enough space
+          setSizes[key] = (setSizes[key] || 0) + areaWeight;
         });
       });
 
       for (const [key, size] of Object.entries(setSizes)) {
-        // Using a slightly more aggressive scaling for visualization
-        areas.push({ sets: key.split(','), size: size * 15 });
+        // Use the calculated area sum as the size for Venn diagram
+        areas.push({ sets: key.split(','), size: size });
       }
 
-      // Ensure all base categories exist even if empty (though unlikely)
+      // Ensure all base categories exist even if empty
       categoryList.forEach((cat) => {
         if (!areas.some((a) => a.sets.length === 1 && a.sets[0] === cat.id)) {
-          areas.push({ sets: [cat.id], size: 5 }); // Minimum size
+          areas.push({ sets: [cat.id], size: 50 }); // Minimum size for empty categories
         }
       });
 
@@ -582,9 +593,9 @@ const SkillChart: React.FC<SkillChartProps> = React.memo(
         .forceSimulation<SkillNode>(nodes)
         .force(
           'collide',
-          d3.forceCollide<SkillNode>((d) => d.r + 2).iterations(2), // Tight packing
+          d3.forceCollide<SkillNode>((d) => d.r + 5).iterations(2), // Increased gap (was +2)
         )
-        .force('charge', d3.forceManyBody().strength(-20)); // prevent overlap glitch
+        .force('charge', d3.forceManyBody().strength(-30)); // Stronger repulsion (was -20)
 
       // Custom force to pull skills to their dynamic group center
       const forceClumpToGroup = (alpha: number) => {
@@ -592,7 +603,8 @@ const SkillChart: React.FC<SkillChartProps> = React.memo(
           const group = groups.find((g) => g.id === d.groupId);
           if (group) {
             // k determines how tight the cluster is. stronger k = tighter.
-            const k = 0.1 * alpha;
+            // Moderate strength to keep them grouped but not too tight (was 0.01)
+            const k = 0.05 * alpha;
             d.vx! += (group.x! - d.x!) * k;
             d.vy! += (group.y! - d.y!) * k;
           }
@@ -611,7 +623,8 @@ const SkillChart: React.FC<SkillChartProps> = React.memo(
             if (isMember) {
               // Stay INSIDE: If dist > radius, push IN
               if (dist > circle.radius - d.r) {
-                const k = (dist - (circle.radius - d.r)) * 0.1 * alpha;
+                // Increased strength to act as a firm wall (was 0.1)
+                const k = (dist - (circle.radius - d.r)) * 0.3 * alpha;
                 d.vx! -= (dx / dist) * k;
                 d.vy! -= (dy / dist) * k;
               }
