@@ -11,6 +11,12 @@ import {
   CarOutlined,
   RobotOutlined,
   RightOutlined,
+  EyeOutlined,
+  BulbOutlined,
+  SafetyCertificateOutlined,
+  ThunderboltOutlined,
+  HeartOutlined,
+  SmileOutlined,
 } from '@ant-design/icons';
 import ResearchVisionChart from '../components/ResearchVisionChart';
 
@@ -74,12 +80,29 @@ interface ResearchArea {
   url: string;
 }
 
+interface Pillar {
+  id: string;
+  name: string;
+  shortName: string;
+  description: string;
+  color: string;
+  icon: string;
+}
+
+interface Outcome {
+  id: string;
+  name: string;
+  icon: string;
+}
+
 interface ResearchData {
   lab: {
     name: string;
     fullName: string;
     philosophy: string;
   };
+  pillars: Pillar[];
+  outcomes: Outcome[];
   researchAreas: ResearchArea[];
 }
 
@@ -88,6 +111,21 @@ const iconMap: Record<string, React.ReactNode> = {
   SearchOutlined: <SearchOutlined />,
   PullRequestOutlined: <PullRequestOutlined />,
   RocketOutlined: <RocketOutlined />,
+};
+
+const pillarIconMap: Record<string, React.ReactNode> = {
+  eye: <EyeOutlined />,
+  brain: <BulbOutlined />,
+  robot: <RobotOutlined />,
+  team: <TeamOutlined />,
+  rocket: <RocketOutlined />,
+};
+
+const outcomeIconMap: Record<string, React.ReactNode> = {
+  SafetyCertificateOutlined: <SafetyCertificateOutlined />,
+  ThunderboltOutlined: <ThunderboltOutlined />,
+  HeartOutlined: <HeartOutlined />,
+  SmileOutlined: <SmileOutlined />,
 };
 
 const HomePage: React.FC = () => {
@@ -200,6 +238,79 @@ const HomePage: React.FC = () => {
           )}
         </div>
       </div>
+
+      {/* Integrated Approach Section — from p.13 */}
+      {researchData && researchData.pillars && (
+        <div className='container mx-auto px-4 py-12 bg-transparent'>
+          <div className='text-center mb-10'>
+            <Title level={2} className='!text-white !mb-3'>
+              Our Integrated Approach
+            </Title>
+            <Paragraph className='!text-white/60 max-w-3xl mx-auto text-base'>
+              {researchData.lab.philosophy}
+            </Paragraph>
+          </div>
+
+          {/* 5 Pillars */}
+          <Row gutter={[16, 16]} justify='center'>
+            {researchData.pillars.map((pillar) => (
+              <Col xs={24} sm={12} md={8} lg={4} key={pillar.id}>
+                <Card
+                  className='backdrop-blur-md border-white/10 h-full text-center hover:shadow-xl transition-all duration-300 hover:scale-105 hover:-translate-y-1'
+                  style={{
+                    background: 'rgba(255, 255, 255, 0.03)',
+                    borderRadius: '16px',
+                    borderTop: `3px solid ${pillar.color}`,
+                  }}
+                >
+                  <div
+                    className='text-3xl mb-3 inline-flex items-center justify-center w-14 h-14 rounded-xl'
+                    style={{
+                      background: `${pillar.color}20`,
+                      color: pillar.color,
+                    }}
+                  >
+                    {pillarIconMap[pillar.icon] || <GlobalOutlined />}
+                  </div>
+                  <Title level={5} className='!text-white !mb-1'>
+                    {pillar.shortName}
+                  </Title>
+                  <Paragraph className='!text-white/50 !mb-0 !text-xs'>
+                    {pillar.description}
+                  </Paragraph>
+                </Card>
+              </Col>
+            ))}
+          </Row>
+
+          {/* 4 Outcomes */}
+          {researchData.outcomes && (
+            <div className='mt-10'>
+              <div className='text-center mb-4'>
+                <Text className='!text-white/40 uppercase tracking-widest text-xs font-semibold'>
+                  Enhancing
+                </Text>
+              </div>
+              <div className='flex flex-wrap justify-center gap-4'>
+                {researchData.outcomes.map((outcome) => (
+                  <div
+                    key={outcome.id}
+                    className='flex items-center gap-2 px-5 py-2.5 rounded-full border border-white/10 backdrop-blur-sm transition-all duration-300 hover:border-white/30 hover:bg-white/5'
+                    style={{ background: 'rgba(255,255,255,0.03)' }}
+                  >
+                    <span className='text-indigo-400 text-lg'>
+                      {outcomeIconMap[outcome.icon] || <GlobalOutlined />}
+                    </span>
+                    <span className='text-white/80 font-medium text-sm'>
+                      {outcome.name}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* About Lab Section */}
       <div className='container mx-auto px-4 py-12 bg-transparent'>

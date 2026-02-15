@@ -14,8 +14,60 @@
         "dblp": "https://dblp.org/pid/12/5268-1.html"
       }
     },
-    "philosophy": "Developing Human-Centered Physical AI Systems that bridge human needs with autonomous system capabilities"
+    "philosophy": "We establish Human-Centered Physical AI, an interdisciplinary field that unifies perception, learning, embodiment, and multi-agent physical and virtual interaction to advance the design, standardization, evaluation, and real-world deployment of Physical AI systems that are safe, reliable, and responsive to human needs — enhancing safety, autonomy, trust, and quality of life."
   },
+  "pillars": [
+    {
+      "id": "perception",
+      "name": "Perception",
+      "shortName": "Perception",
+      "description": "Computer Vision, Machine Learning, Artificial Intelligence",
+      "color": "#60A5FA",
+      "icon": "eye"
+    },
+    {
+      "id": "decision-making",
+      "name": "Decision Making & Planning",
+      "shortName": "Decision Making",
+      "description": "Reasoning, control, multi-agent decision processes",
+      "color": "#A78BFA",
+      "icon": "brain"
+    },
+    {
+      "id": "embodiment",
+      "name": "Embodiment",
+      "shortName": "Embodiment",
+      "description": "Control Systems and Mechatronics",
+      "color": "#34D399",
+      "icon": "robot"
+    },
+    {
+      "id": "interaction",
+      "name": "Multi-agent Interaction",
+      "shortName": "Interaction",
+      "description": "Human–Computer/Robot Interaction, Cognitive Science",
+      "color": "#FBBF24",
+      "icon": "team"
+    },
+    {
+      "id": "deployment",
+      "name": "Deployment & Evaluation",
+      "shortName": "Deployment",
+      "description": "Standards, real-world testing and validation",
+      "color": "#F87171",
+      "icon": "rocket"
+    }
+  ],
+  "outcomes": [
+    { "id": "safety", "name": "Safety", "icon": "SafetyCertificateOutlined" },
+    { "id": "autonomy", "name": "Autonomy", "icon": "ThunderboltOutlined" },
+    { "id": "trust", "name": "Trust", "icon": "HeartOutlined" },
+    {
+      "id": "quality-of-life",
+      "name": "Quality of Life",
+      "icon": "SmileOutlined"
+    }
+  ],
   "researchAreas": [
     {
       "id": "intelligent-driving",
