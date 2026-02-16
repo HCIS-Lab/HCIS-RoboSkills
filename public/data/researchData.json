@@ -117,7 +117,7 @@
       "id": "ai-camp",
       "title": "Fun AI Camp",
       "description": "Hands-on AI and robotics workshops introducing students to Physical AI concepts through interactive projects.",
-      "season": "Winter 2024",
+      "season": "Winter 2026",
       "link": "https://mislab.cs.nthu.edu.tw/explorecsr-5/index.html",
       "image": "/fun-ai-camp-2026.png",
       "icon": "ExperimentOutlined"
@@ -126,7 +126,7 @@
       "id": "wildbot",
       "title": "WildBot Competition",
       "description": "A robotics competition challenging teams to build autonomous mobile manipulation systems in real-world scenarios.",
-      "season": "2025",
+      "season": "2026",
       "link": "https://wildbot-competition.com",
       "image": "https://wildbot-competition.com/_next/image?url=%2Fassets%2Fhero_robot_car.png&w=1920&q=75",
       "icon": "TrophyOutlined"
